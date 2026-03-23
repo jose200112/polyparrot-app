@@ -1,5 +1,0 @@
-package com.polyparrot.userservice.service;
-
-public class JwtService {
-
-}
