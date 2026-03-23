@@ -1,0 +1,5 @@
+package com.polyparrot.userservice.dto;
+
+public class LoginRequest {
+
+}
