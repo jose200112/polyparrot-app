@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.polyparrot.teacherservice.dto.CreateTeacherRequest;
 import com.polyparrot.teacherservice.entity.Teacher;
 import com.polyparrot.teacherservice.repository.TeacherRepository;
-import com.polyparrot.teacherservice.security.AuthenticatedUser;
 import com.polyparrot.teacherservice.security.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;

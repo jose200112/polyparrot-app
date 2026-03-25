@@ -2,6 +2,7 @@ package com.polyparrot.userservice.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import com.polyparrot.userservice.dto.AuthResponse;
 import com.polyparrot.userservice.dto.LoginRequest;
 import com.polyparrot.userservice.dto.RegisterRequest;
 import com.polyparrot.userservice.entity.User;
+import com.polyparrot.userservice.exception.EmailAlreadyExistsException;
 import com.polyparrot.userservice.repository.UserRepository;
 import com.polyparrot.userservice.security.JwtService;
 
@@ -35,8 +37,12 @@ public class AuthService {
                 .role("STUDENT")
                 .createdAt(LocalDateTime.now())
                 .build();
-
-        userRepository.save(user);
+        
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailAlreadyExistsException();
+        }
     }
 
     public AuthResponse login(LoginRequest request) {

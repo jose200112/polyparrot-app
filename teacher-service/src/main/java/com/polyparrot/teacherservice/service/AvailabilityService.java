@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.polyparrot.teacherservice.client.BookingClient;
 import com.polyparrot.teacherservice.entity.AvailabilitySlot;
+import com.polyparrot.teacherservice.exception.CannotDeleteSlotException;
 import com.polyparrot.teacherservice.repository.AvailabilityRepository;
 import com.polyparrot.teacherservice.security.AuthenticatedUser;
 import com.polyparrot.teacherservice.security.SecurityUtils;
@@ -17,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 public class AvailabilityService {
 	
 	private final AvailabilityRepository availabilityRepository;
+	
+	private final BookingClient bookingClient;
 	
 	public AvailabilitySlot createSlot(LocalDateTime start, LocalDateTime end) {
 
@@ -58,4 +62,24 @@ public class AvailabilityService {
 	public List<AvailabilitySlot> getSlotsByTeacher(Long teacherId) {
 	    return availabilityRepository.findByTeacherId(teacherId);
 	}
+	
+	public void deleteSlot(Long slotId) {
+
+	    AvailabilitySlot slot = availabilityRepository.findById(slotId)
+	        .orElseThrow(() -> new RuntimeException("Slot not found"));
+
+	    boolean hasBookings = bookingClient.hasBookings(
+	        slot.getTeacherId(),
+	        slot.getStartTime().toString(),
+	        slot.getEndTime().toString()
+	    );
+
+	    if (hasBookings) {
+	        throw new CannotDeleteSlotException();
+	    }
+
+	    availabilityRepository.delete(slot);
+	}
+	
+	
 }

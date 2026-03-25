@@ -2,6 +2,7 @@ package com.polyparrot.teacherservice.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,5 +32,10 @@ public class AvailabilityController {
     @GetMapping("/availability/{teacherId}")
     public List<AvailabilitySlot> getSlots(@PathVariable Long teacherId) {
         return availabilityService.getSlotsByTeacher(teacherId);
+    }
+    
+    @DeleteMapping("/availability/{id}")
+    public void deleteSlot(@PathVariable Long id) {
+        availabilityService.deleteSlot(id);
     }
 }
