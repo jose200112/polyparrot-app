@@ -1,0 +1,121 @@
+<div class="form-container">
+
+<form #form="ngForm" (ngSubmit)="register()" class="form-card">
+
+  <h2>Crear cuenta</h2>
+
+  <!-- NOMBRE -->
+  <input type="text"
+         placeholder="Nombre"
+         [(ngModel)]="user.name"
+         name="name"
+         #name="ngModel"
+         maxlength="50" 
+         (ngModelChange)="onInputChange('name'); validateForm()"/>
+
+<p class="error" *ngIf="frontErrors['name'] && (name.touched || form.submitted)">
+  {{ frontErrors['name'] }}
+</p>
+
+<p class="error" *ngIf="!frontErrors['name'] && backErrors['name']">
+  {{ backErrors['name'] }}
+</p>
+
+  <!-- PRIMER APELLIDO -->
+  <input type="text"
+         placeholder="Primer apellido"
+         [(ngModel)]="user.firstSurname"
+         name="firstSurname"
+         #firstSurname="ngModel"
+         maxlength="50"
+         (ngModelChange)="onInputChange('firstSurname'); validateForm()" />
+
+<p class="error" *ngIf="frontErrors['firstSurname'] && (firstSurname.touched || form.submitted)">
+  {{ frontErrors['firstSurname'] }}
+</p>
+
+<p class="error" *ngIf="!frontErrors['firstSurname'] && backErrors['firstSurname']">
+  {{ backErrors['firstSurname'] }}
+</p>
+
+
+  <!-- SEGUNDO APELLIDO -->
+  <input type="text"
+         placeholder="Segundo apellido (opcional)"
+         [(ngModel)]="user.secondSurname"
+         name="secondSurname"
+         #secondSurname="ngModel"
+         maxlength="50"
+         (ngModelChange)="onInputChange('secondSurname'); validateForm()" />
+
+<p class="error" *ngIf="frontErrors['secondSurname'] && (secondSurname.touched || form.submitted)">
+  {{ frontErrors['secondSurname'] }}
+</p>
+
+<p class="error" *ngIf="!frontErrors['secondSurname'] && backErrors['secondSurname']">
+  {{ backErrors['secondSurname'] }}
+</p>
+
+  <!-- EMAIL -->
+  <input type="email"
+         placeholder="Email"
+         [(ngModel)]="user.email"
+         name="email"
+         #email="ngModel"
+         maxlength="100"
+         (ngModelChange)="onInputChange('email'); validateForm()" />
+
+<p class="error" *ngIf="frontErrors['email'] && (email.touched || form.submitted)">
+  {{ frontErrors['email'] }}
+</p>
+
+<p class="error" *ngIf="!frontErrors['email'] && backErrors['email']">
+  {{ backErrors['email'] }}
+</p>
+
+  <!-- PASSWORD -->
+  <input type="password"
+         placeholder="Contraseña"
+         [(ngModel)]="user.password"
+         name="password"
+         #password="ngModel"
+          maxlength="50"
+         (ngModelChange)="onInputChange('password'); validateForm()" />
+
+<p class="error" *ngIf="frontErrors['password'] && (password.touched || form.submitted)">
+  {{ frontErrors['password'] }}
+</p>
+
+<p class="error" *ngIf="!frontErrors['password'] && backErrors['password']">
+  {{ backErrors['password'] }}
+</p>
+
+  <!-- CONFIRM PASSWORD -->
+<input type="password"
+       placeholder="Confirmar contraseña"
+       [(ngModel)]="user.confirmPassword"
+       name="confirmPassword"
+       #confirm="ngModel"
+       maxlength="50"
+       (ngModelChange)="onInputChange('confirmPassword'); validateForm()" />
+
+<p class="error" *ngIf="frontErrors['confirmPassword'] && (confirm.touched || form.submitted)">
+  {{ frontErrors['confirmPassword'] }}
+</p>
+
+
+  <button type="submit">
+    Registrarse
+  </button>
+
+  <p class="error" *ngIf="backErrors['general']">
+  {{ backErrors['general'] }}
+</p>
+
+  <p class="form-link">
+  ¿Ya tienes cuenta?
+  <a routerLink="/login">Inicia sesión</a>
+</p>
+</form>
+
+</div>

@@ -1,0 +1,50 @@
+<div class="form-container">
+  <form #form="ngForm" (ngSubmit)="login()" class="form-card">
+
+    <h2>Iniciar sesión</h2>
+
+<input
+  type="email"
+  [(ngModel)]="user.email"
+  name="email"
+  #email="ngModel"
+  placeholder="Email"
+  required
+  maxlength="100"
+  (ngModelChange)="onInputChange(); validateForm()"
+/>
+
+    <p class="error" *ngIf="frontErrors.email && (email.touched || form.submitted)">
+  {{ frontErrors.email }}
+</p>
+
+<input
+  type="password"
+  [(ngModel)]="user.password"
+  name="password"
+  #password="ngModel"
+  placeholder="Contraseña"
+  required
+  maxlength="50"
+  (ngModelChange)="onInputChange(); validateForm()"
+/>
+
+<p class="error" *ngIf="frontErrors.password && (password.touched || form.submitted)">
+  {{ frontErrors.password }}
+</p>
+
+<p class="error" *ngIf="backError">
+  {{ backError }}
+</p>
+
+
+
+    <button type="submit">Entrar</button>
+
+
+<p class="form-link">
+  ¿No tienes cuenta?
+  <a routerLink="/register">Regístrate</a>
+</p>
+  </form>
+</div>

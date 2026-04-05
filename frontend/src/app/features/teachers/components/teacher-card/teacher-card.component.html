@@ -1,0 +1,21 @@
+<div class="teacher-card">
+  <img
+    class="avatar"
+    src="assets/avatarexample.jpeg"
+    alt="teacher"
+  />
+
+  <h3>{{ teacher.name }} {{ teacher.firstSurname }}</h3>
+
+  <p class="bio">{{ teacher.bio }}</p>
+
+  <div class="rating">
+    ⭐ {{ teacher.rating }}
+  </div>
+
+  <div class="languages">
+    <span *ngFor="let lang of teacher.languages">
+      {{ lang.name }}
+    </span>
+  </div>
+</div>

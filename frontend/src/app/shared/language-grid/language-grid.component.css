@@ -1,0 +1,78 @@
+/* ========================= GRID ========================= */
+.languages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 50px 80px;
+}
+
+/* ========================= CARD ========================= */
+.language-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 18px;
+  padding: 24px 28px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.language-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-color: #ff7a18;
+}
+
+/* ========================= LEFT ========================= */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ========================= ICON ========================= */
+.language-card .left img {
+  width: 42px;
+  height: 42px;
+}
+
+/* ========================= TEXT ========================= */
+.text h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+.text p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ========================= ARROW ========================= */
+.arrow-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.3;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.language-card:hover .arrow-icon {
+  opacity: 0.7;
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .languages-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .languages-grid {
+    grid-template-columns: 1fr;
+  }
+}

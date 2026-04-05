@@ -1,0 +1,17 @@
+<div class="languages-grid">
+
+  <div class="language-card" *ngFor="let lang of languages" (click)="goToSearch(lang)">
+
+    <div class="left">
+      <img [src]="lang.icon" alt="icon" />
+      <div class="text">
+        <h3>Clases de {{ lang.name }}</h3>
+        <p>{{ lang.count }} profesores</p>
+      </div>
+    </div>
+
+    <img src="assets/chevron-derecho.png" class="arrow-icon" alt="ver" />
+
+  </div>
+
+</div>

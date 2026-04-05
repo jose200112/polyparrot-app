@@ -1,0 +1,248 @@
+.student-home {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 110px 24px 40px 24px;
+}
+
+.home-header {
+  margin-bottom: 32px;
+}
+
+.home-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.home-header p {
+  color: #666;
+  font-size: 14px;
+}
+
+.username {
+  color: #ff7a00;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ff7a00;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+.section h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: #aaa;
+}
+
+.booking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  transition: box-shadow 0.15s;
+  gap: 16px;
+}
+
+.booking-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.booking-left {
+  min-width: 140px;
+}
+
+.booking-day-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  text-transform: capitalize;
+  margin-bottom: 4px;
+}
+
+.booking-day-label.today {
+  color: #ff7a00;
+}
+
+.booking-hour {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.booking-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.teacher-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff3e0;
+  color: #e65c00;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.teacher-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.teacher-label {
+  font-size: 12px;
+  color: #999;
+}
+
+.booking-right {
+  flex-shrink: 0;
+}
+
+.btn-join {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #ff7a00;
+  color: white;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.btn-join:hover {
+  background: #e65c00;
+}
+
+.loading {
+  text-align: center;
+  color: #999;
+  padding: 60px 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  display: block;
+}
+
+.empty p {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  margin: 0;
+}
+
+.empty small {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.btn-explore {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 10px 24px;
+  background: #ff7a00;
+  color: white;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.btn-explore:hover {
+  background: #e65c00;
+}
+
+.error {
+  color: #e53935;
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .student-home {
+    padding: 80px 16px 32px 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .stat-number {
+    font-size: 22px;
+  }
+
+  .booking-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .booking-right {
+    width: 100%;
+  }
+
+  .btn-join {
+    width: 100%;
+    text-align: center;
+  }
+}

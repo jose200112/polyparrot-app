@@ -1,0 +1,252 @@
+/* ========================= NAVBAR PRINCIPAL ========================= */
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  backdrop-filter: blur(6px);
+}
+
+/* ========================= CONTENEDOR ========================= */
+.navbar-container {
+  max-width: 100%;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 80px;
+  padding: 0 20px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+/* ========================= IZQUIERDA ========================= */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* LOGO */
+.logo-text {
+  height: 130px;
+  width: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.logo-text:hover {
+  transform: scale(1.05);
+}
+
+/* LINKS */
+.navbar-left a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.navbar-left a:hover {
+  color: white;
+}
+
+/* ========================= DERECHA ========================= */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* LOGIN */
+.btn-login {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-login:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: white;
+}
+
+/* REGISTER */
+.btn-register {
+  background: white;
+  color: #111;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn-register:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+/* ========================================================= */
+/* ========================= RESPONSIVE ===================== */
+/* ========================================================= */
+
+/* MÓVIL */
+@media (max-width: 768px) {
+
+  .navbar-container {
+    height: 60px;
+  }
+
+  .logo-text {
+    height: 60px;
+  }
+
+  .navbar-left {
+    gap: 10px;
+  }
+
+  .navbar-left a {
+    font-size: 12px;
+  }
+
+  .navbar-right {
+    gap: 6px;
+  }
+
+  .btn-login,
+  .btn-register {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+/* HAMBURGUESA */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
+/* SIDEBAR */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: white;
+  z-index: 20;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: right 0.3s ease;
+}
+
+.mobile-menu.open {
+  right: 0;
+}
+
+.mobile-menu a {
+  text-decoration: none;
+  color: #111;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.mobile-menu a:hover {
+  background: #f2f2f2;
+}
+
+/* HEADER MENU */
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  z-index: 15;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  .nav-links {
+    display: none;
+  }
+
+  .btn-login,
+  .btn-register {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .logo-text {
+  height: 90px;
+}
+}
+
+.bell-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.bell-wrapper:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.bell-icon {
+  font-size: 20px;
+}
+
+.bell-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #e53935;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}

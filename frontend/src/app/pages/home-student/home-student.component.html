@@ -1,0 +1,68 @@
+<div class="student-home">
+
+  <!-- SALUDO -->
+  <div class="home-header">
+    <h2>Hola, <span class="username">{{ userName }}</span> 👋</h2>
+    <p>Aquí tienes un resumen de tu semana</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card">
+      <span class="stat-number">{{ classesThisWeek }}</span>
+      <span class="stat-label">Clases esta semana</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ uniqueTeachers }}</span>
+      <span class="stat-label">Profesores distintos</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ hoursThisWeek }}h</span>
+      <span class="stat-label">Horas esta semana</span>
+    </div>
+  </div>
+
+  <!-- PRÓXIMAS CLASES -->
+  <section class="section">
+    <h3>Próximas clases <span class="section-subtitle">(próximos 7 días)</span></h3>
+
+    <div class="loading" *ngIf="loading">Cargando clases...</div>
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div class="empty" *ngIf="!loading && !error && bookings.length === 0">
+      <span class="empty-icon">📚</span>
+      <p>No tienes clases en los próximos 7 días</p>
+      <small>Encuentra un profesor y reserva tu primera clase</small>
+      <a routerLink="/teachers" class="btn-explore">Buscar profesores</a>
+    </div>
+
+    <div class="booking-list" *ngIf="!loading && bookings.length > 0">
+      <div class="booking-card" *ngFor="let booking of bookings">
+
+        <div class="booking-left">
+          <div class="booking-day-label" [class.today]="isToday(booking.startTime)">
+            {{ getDayLabel(booking.startTime) }}
+          </div>
+          <div class="booking-hour">{{ formatHour(booking.startTime) }}</div>
+        </div>
+
+        <div class="booking-center">
+          <div class="teacher-avatar">
+            {{ booking.teacherName?.charAt(0) }}{{ booking.teacherFirstSurname?.charAt(0) }}
+          </div>
+          <div class="teacher-info">
+            <div class="teacher-name">{{ getTeacherName(booking) }}</div>
+            <div class="teacher-label">Profesor</div>
+          </div>
+        </div>
+
+        <div class="booking-right">
+          <a class="btn-join" href="#">Unirse a la clase →</a>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+</div>

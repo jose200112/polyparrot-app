@@ -1,0 +1,16 @@
+<div class="teacher-section">
+  <swiper-container
+    [slidesPerView]="1"
+    [spaceBetween]="15"
+    [navigation]="true"
+    [loop]="true"
+    [grabCursor]="true"
+    [breakpoints]="breakpoints"
+  >
+
+    <swiper-slide *ngFor="let teacher of teachers">
+      <app-teacher-card [teacher]="teacher"></app-teacher-card>
+    </swiper-slide>
+
+  </swiper-container>
+</div>

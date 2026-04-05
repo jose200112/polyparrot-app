@@ -1,0 +1,33 @@
+<div class="notifications-container">
+
+  <div class="notifications-header">
+    <h2>Notificaciones</h2>
+    <p>Aquí verás todas tus notificaciones</p>
+  </div>
+
+  <div class="loading" *ngIf="loading">Cargando...</div>
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="empty" *ngIf="!loading && !error && notifications.length === 0">
+    <span class="empty-icon">🔔</span>
+    <p>No tienes notificaciones</p>
+  </div>
+
+  <div class="notification-list" *ngIf="!loading && notifications.length > 0">
+    <div class="notification-card" *ngFor="let n of notifications"
+         [class.unread]="!n.read"
+         (click)="navigate(n)">
+
+      <div class="notification-icon">{{ getIcon(n.type) }}</div>
+
+      <div class="notification-body">
+        <p class="notification-message">{{ n.message }}</p>
+        <span class="notification-date">{{ formatDate(n.createdAt) }}</span>
+      </div>
+
+      <div class="unread-dot" *ngIf="!n.read"></div>
+
+    </div>
+  </div>
+
+</div>

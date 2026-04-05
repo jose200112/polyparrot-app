@@ -1,0 +1,97 @@
+<div class="calendar-container">
+
+  <div class="calendar-info">
+    <h2>Tu disponibilidad</h2>
+    <p>Selecciona las franjas horarias en las que puedes dar clases. Los alumnos solo podrán reservar en los horarios que tú actives.</p>
+    <div class="calendar-hints">
+      <span class="hint"><span class="hint-dot active-dot"></span> Disponible</span>
+      <span class="hint"><span class="hint-dot pending-dot"></span> Pendiente</span>
+      <span class="hint"><span class="hint-dot confirmed-dot"></span> Reservado</span>
+      <span class="hint"><span class="hint-dot cancelled-dot"></span> Cancelado</span>
+      <span class="hint"><span class="hint-dot past-dot"></span> No disponible / pasado</span>
+      <span class="hint">💡 Haz clic en una celda para activarla o desactivarla</span>
+    </div>
+  </div>
+
+  <div class="calendar-header">
+    <button type="button" (click)="prevWeek()" [disabled]="isCurrentWeek()" class="nav-btn">‹</button>
+    <span class="week-label">{{ weekLabel() }}</span>
+    <button type="button" (click)="nextWeek()" class="nav-btn">›</button>
+  </div>
+
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <div class="calendar-grid">
+    <div class="grid-corner"></div>
+    <div class="day-header" *ngFor="let day of weekDays; let i = index">
+      <span class="day-name">{{ DAYS[i] }}</span>
+      <span class="day-num">{{ getDayNumber(day) }}</span>
+    </div>
+
+    <ng-container *ngFor="let hour of hours">
+      <div class="hour-label">{{ hour }}:00</div>
+      <div
+        *ngFor="let day of weekDays"
+        class="slot-cell"
+        [class.active]="isSlotActive(day, hour) && !getBookingStatus(day, hour)"
+        [class.booked-confirmed]="getBookingStatus(day, hour) === 'confirmed'"
+        [class.booked-pending]="getBookingStatus(day, hour) === 'pending'"
+        [class.booked-cancelled]="getBookingStatus(day, hour) === 'cancelled'"
+        [class.past]="isPast(day, hour)"
+        (click)="toggleSlot(day, hour)"
+      ></div>
+    </ng-container>
+  </div>
+
+</div>
+
+<!-- POPUP -->
+<div class="popup-overlay" *ngIf="showPopup" (click)="closePopup()">
+  <div class="popup-card" (click)="$event.stopPropagation()">
+
+    <div class="popup-header">
+      <h3>Detalle de la reserva</h3>
+      <button class="popup-close" (click)="closePopup()">×</button>
+    </div>
+
+    <div class="popup-body" *ngIf="selectedBooking">
+      <div class="popup-row">
+        <span class="popup-label">Alumno</span>
+        <span class="popup-value">{{ getStudentName(selectedBooking) }}</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Fecha</span>
+        <span class="popup-value">{{ formatDate(selectedBooking.startTime) }}</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Hora</span>
+        <span class="popup-value">{{ formatHour(selectedBooking.startTime) }}</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Estado</span>
+        <span class="popup-status"
+          [class.confirmed]="selectedBooking.status === 'CONFIRMED'"
+          [class.pending]="selectedBooking.status === 'PENDING'"
+          [class.cancelled]="selectedBooking.status === 'CANCELLED'">
+          {{ selectedBooking.status === 'CONFIRMED' ? 'Confirmada' :
+             selectedBooking.status === 'PENDING' ? 'Pendiente' : 'Cancelada' }}
+        </span>
+      </div>
+    </div>
+
+    <p class="popup-error" *ngIf="confirmError">{{ confirmError }}</p>
+    <div class="popup-success" *ngIf="confirmSuccess">✅ Reserva confirmada</div>
+
+    <div class="popup-divider"></div>
+
+    <div class="popup-actions">
+      <button class="btn-close-popup" (click)="closePopup()">Cerrar</button>
+      <button class="btn-confirm-booking"
+        *ngIf="selectedBooking?.status === 'PENDING' && !confirmSuccess"
+        (click)="confirmBooking()">
+        Confirmar ✓
+      </button>
+    </div>
+
+  </div>
+</div>

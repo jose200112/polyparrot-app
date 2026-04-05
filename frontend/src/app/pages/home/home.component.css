@@ -1,0 +1,27 @@
+.hero {
+  height: 100vh;
+  background: linear-gradient(135deg, #ff6ec4, #7873f5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  background: black;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}

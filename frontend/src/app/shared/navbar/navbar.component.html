@@ -1,0 +1,106 @@
+<nav class="navbar">
+  <div class="navbar-container">
+
+    <!-- LEFT -->
+    <div class="navbar-left">
+
+      <!-- LOGO -->
+      <img src="assets/logoletra.png" class="logo-text"
+        [routerLink]="!isLoggedIn() ? '/' : isTeacher() ? '/teacher/home' : '/student/home'" />
+
+      <!-- NAV LINKS -->
+      <div class="nav-links">
+
+        <!-- NO LOGUEADO -->
+        <ng-container *ngIf="!isLoggedIn()">
+          <a routerLink="/">Inicio</a>
+          <a routerLink="/teachers">Buscar profesores</a>
+          <a routerLink="/register" [queryParams]="{ type: 'teacher' }">Conviértete en profesor</a>
+        </ng-container>
+
+        <!-- TEACHER -->
+        <ng-container *ngIf="isLoggedIn() && isTeacher()">
+          <a routerLink="/teacher/home">Inicio</a>
+          <a routerLink="/teacher/profile">Mi perfil</a>
+          <a routerLink="/teacher/calendar">Mi calendario</a>
+        </ng-container>
+
+        <!-- STUDENT -->
+        <ng-container *ngIf="isLoggedIn() && !isTeacher()">
+          <a routerLink="/student/home">Inicio</a>
+          <a routerLink="/student/profile">Mi perfil</a>
+          <a routerLink="/student/calendar">Mi calendario</a>
+          <a routerLink="/teachers">Buscar profesores</a>
+        </ng-container>
+
+      </div>
+    </div>
+
+<!-- RIGHT -->
+<div class="navbar-right">
+  <ng-container *ngIf="!isLoggedIn()">
+    <button class="btn-login" routerLink="/login">Iniciar sesión</button>
+    <button class="btn-register" routerLink="/register" [queryParams]="{ type: 'student' }">Registrarse</button>
+  </ng-container>
+
+  <ng-container *ngIf="isLoggedIn()">
+    <!-- CAMPANA -->
+<div class="bell-wrapper" routerLink="/notifications">
+  <svg class="bell-icon" [class.bell-active]="unreadCount > 0" 
+       xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
+       fill="white" width="22" height="22">
+    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+  </svg>
+  <span class="bell-badge" *ngIf="unreadCount > 0"></span>
+</div>
+    <button class="btn-register" (click)="logout()">Cerrar sesión</button>
+  </ng-container>
+
+  <div class="hamburger" (click)="toggleMenu()">☰</div>
+</div>
+
+  </div>
+</nav>
+
+<!-- SIDEBAR -->
+<div class="mobile-menu" [class.open]="menuOpen">
+  <div class="menu-header">
+    <ng-container *ngIf="isLoggedIn()">
+      <a *ngIf="isTeacher()" routerLink="/teacher/profile" (click)="toggleMenu()">Mi perfil</a>
+      <a *ngIf="!isTeacher()" routerLink="/student/profile" (click)="toggleMenu()">Mi perfil</a>
+    </ng-container>
+    <ng-container *ngIf="!isLoggedIn()">
+      <a routerLink="/login" class="menu-login">Iniciar sesión</a>
+    </ng-container>
+    <button (click)="toggleMenu()">✕</button>
+  </div>
+
+  <!-- NO LOGUEADO -->
+  <ng-container *ngIf="!isLoggedIn()">
+    <a routerLink="/" (click)="toggleMenu()">Inicio</a>
+    <a routerLink="/teachers" (click)="toggleMenu()">Buscar profesores</a>
+    <a routerLink="/register" [queryParams]="{ type: 'teacher' }" (click)="toggleMenu()">Conviértete en profesor</a>
+    <a routerLink="/login" (click)="toggleMenu()">Iniciar sesión</a>
+  </ng-container>
+
+  <!-- TEACHER -->
+  <ng-container *ngIf="isLoggedIn() && isTeacher()">
+    <a routerLink="/teacher/home" (click)="toggleMenu()">Inicio</a>
+    <a routerLink="/teacher/profile" (click)="toggleMenu()">Mi perfil</a>
+    <a routerLink="/teacher/calendar" (click)="toggleMenu()">Mi calendario</a>
+    <a (click)="logout()">Cerrar sesión</a>
+  </ng-container>
+
+  <!-- STUDENT -->
+  <ng-container *ngIf="isLoggedIn() && !isTeacher()">
+    <a routerLink="/student/home" (click)="toggleMenu()">Inicio</a>
+    <a routerLink="/student/profile" (click)="toggleMenu()">Mi perfil</a>
+    <a routerLink="/student/calendar" (click)="toggleMenu()">Mi calendario</a>
+    <a routerLink="/teachers" (click)="toggleMenu()">Buscar profesores</a>
+    <a (click)="logout()">Cerrar sesión</a>
+  </ng-container>
+
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" *ngIf="menuOpen" (click)="toggleMenu()"></div>

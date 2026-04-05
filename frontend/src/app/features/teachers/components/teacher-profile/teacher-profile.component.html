@@ -1,0 +1,127 @@
+<div class="profile-container">
+
+  <div class="profile-header">
+    <h2>Mi perfil</h2>
+    <p>Gestiona tu información personal y tu perfil de profesor</p>
+  </div>
+
+  <!-- DATOS PERSONALES -->
+  <div class="profile-card">
+    <h3>Datos personales</h3>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Nombre</label>
+        <input type="text" [(ngModel)]="userData.name" maxlength="50" />
+        <p class="field-error" *ngIf="userErrors['name']">{{ userErrors['name'] }}</p>
+      </div>
+      <div class="field-group">
+        <label>Primer apellido</label>
+        <input type="text" [(ngModel)]="userData.firstSurname" maxlength="50" />
+        <p class="field-error" *ngIf="userErrors['firstSurname']">{{ userErrors['firstSurname'] }}</p>
+      </div>
+      <div class="field-group">
+        <label>Segundo apellido <span class="optional">(opcional)</span></label>
+        <input type="text" [(ngModel)]="userData.secondSurname" maxlength="50" />
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <p class="success-msg" *ngIf="userSuccess">✅ Datos guardados correctamente</p>
+      <p class="field-error" *ngIf="userErrors['general']">{{ userErrors['general'] }}</p>
+      <button class="btn-save" (click)="saveUserData()" [disabled]="userLoading">
+        {{ userLoading ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- PERFIL DE PROFESOR -->
+  <div class="profile-card">
+    <h3>Perfil de profesor</h3>
+
+    <!-- BIO -->
+    <div class="field-group">
+      <label>Descripción <span class="optional">(opcional)</span></label>
+      <div class="bio-wrapper">
+        <textarea
+          [(ngModel)]="teacherData.bio"
+          maxlength="200"
+          placeholder="Cuéntanos sobre ti"
+        ></textarea>
+        <span class="char-counter" [class.counter-limit]="teacherData.bio.length >= 180">
+          {{ teacherData.bio.length }}/200
+        </span>
+      </div>
+    </div>
+
+    <!-- PRECIO -->
+    <div class="field-group">
+      <label>Precio por hora (€)</label>
+      <input type="number" [(ngModel)]="teacherData.pricePerHour" min="1" max="500" />
+      <p class="field-error" *ngIf="teacherErrors['price']">{{ teacherErrors['price'] }}</p>
+    </div>
+
+    <!-- IDIOMAS QUE ENSEÑA -->
+    <div class="field-group">
+      <label>Idiomas que enseñas</label>
+      <div class="custom-select" (click)="toggleTeaching(); $event.stopPropagation()">
+        <div class="select-display">
+          <span class="placeholder">Añadir idioma</span>
+          <span class="arrow" [class.open]="showTeaching">▾</span>
+        </div>
+        <div class="dropdown" *ngIf="showTeaching">
+          <div *ngFor="let lang of availableTeachingLanguages" class="dropdown-item"
+               (click)="selectTeaching(lang); $event.stopPropagation()">
+            {{ lang.name }}
+          </div>
+          <div *ngIf="availableTeachingLanguages.length === 0" class="dropdown-empty">
+            No hay más idiomas disponibles
+          </div>
+        </div>
+      </div>
+      <p class="field-error" *ngIf="teacherErrors['teaching']">{{ teacherErrors['teaching'] }}</p>
+      <div class="tags" *ngIf="teacherData.teachingLanguages.length">
+        <span *ngFor="let lang of teacherData.teachingLanguages" class="tag">
+          {{ lang.name }}
+          <button type="button" (click)="removeTeaching(lang)">×</button>
+        </span>
+      </div>
+    </div>
+
+    <!-- IDIOMAS QUE HABLA -->
+    <div class="field-group">
+      <label>Idiomas que hablas</label>
+      <div class="custom-select" (click)="toggleSpoken(); $event.stopPropagation()">
+        <div class="select-display">
+          <span class="placeholder">Añadir idioma</span>
+          <span class="arrow" [class.open]="showSpoken">▾</span>
+        </div>
+        <div class="dropdown" *ngIf="showSpoken">
+          <div *ngFor="let lang of availableSpokenLanguages" class="dropdown-item"
+               (click)="selectSpoken(lang); $event.stopPropagation()">
+            {{ lang.name }}
+          </div>
+          <div *ngIf="availableSpokenLanguages.length === 0" class="dropdown-empty">
+            No hay más idiomas disponibles
+          </div>
+        </div>
+      </div>
+      <p class="field-error" *ngIf="teacherErrors['spoken']">{{ teacherErrors['spoken'] }}</p>
+      <div class="tags" *ngIf="teacherData.spokenLanguages.length">
+        <span *ngFor="let lang of teacherData.spokenLanguages" class="tag">
+          {{ lang.name }}
+          <button type="button" (click)="removeSpoken(lang)">×</button>
+        </span>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <p class="success-msg" *ngIf="teacherSuccess">✅ Perfil actualizado correctamente</p>
+      <p class="field-error" *ngIf="teacherErrors['general']">{{ teacherErrors['general'] }}</p>
+      <button class="btn-save" (click)="saveTeacherData()" [disabled]="teacherLoading">
+        {{ teacherLoading ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </div>
+
+</div>

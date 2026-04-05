@@ -1,0 +1,117 @@
+/* =========================
+   HERO
+========================= */
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #ff5a3c, #ffb400);
+  color: white;
+}
+
+/* 🦜 Imagen */
+.hero-image {
+  width: 180px;   /* 👈 un poco más elegante */
+  margin: 20px 0;
+}
+
+/* =========================
+   BUSCADOR
+========================= */
+.search-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.search-box input {
+  padding: 12px;
+  width: 320px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-box button {
+  padding: 12px 18px;
+  margin-left: 10px;
+  border-radius: 8px;
+  border: none;
+  background: white;   
+  color: #111;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-box button:hover {
+  background: #f2f2f2;
+}
+
+.search-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-select {
+  position: relative;
+  width: 300px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.select-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+.placeholder {
+  color: #aaa;
+}
+
+.selected-lang {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.arrow {
+  color: #555;
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+}
+
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: #fff3e0; color: #e65c00; }

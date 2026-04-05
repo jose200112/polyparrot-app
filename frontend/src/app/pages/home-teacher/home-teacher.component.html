@@ -1,0 +1,111 @@
+<div class="teacher-home">
+
+  <!-- SALUDO -->
+  <div class="home-header">
+    <h2>Hola, <span class="username">{{ teacherName }}</span> 👋</h2>
+    <p>Aquí tienes un resumen de tu semana</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card">
+      <span class="stat-number">{{ classesThisWeek }}</span>
+      <span class="stat-label">Clases esta semana</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ uniqueStudents }}</span>
+      <span class="stat-label">Alumnos distintos</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ hoursThisWeek }}h</span>
+      <span class="stat-label">Horas esta semana</span>
+    </div>
+  </div>
+
+  <!-- AVISO SIN DISPONIBILIDAD -->
+  <div class="alert-card" *ngIf="!loading && !hasUpcomingSlots()">
+    <span class="alert-icon">📅</span>
+    <div class="alert-text">
+      <strong>No tienes disponibilidad configurada esta semana</strong>
+      <p>Añade horarios en tu calendario para que los alumnos puedan reservar</p>
+    </div>
+    <a routerLink="/teacher/calendar" class="btn-alert">Ir al calendario</a>
+  </div>
+
+  <div class="loading" *ngIf="loading">Cargando clases...</div>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p class="confirm-success" *ngIf="confirmSuccess">{{ confirmSuccess }}</p>
+  <p class="error" *ngIf="confirmError">{{ confirmError }}</p>
+
+  <!-- RESERVAS PENDIENTES -->
+  <section class="section" *ngIf="!loading && pendingBookings.length > 0">
+    <h3>Pendientes de confirmación
+      <span class="pending-badge">{{ pendingBookings.length }}</span>
+    </h3>
+    <div class="booking-list">
+      <div class="booking-card pending" *ngFor="let booking of pendingBookings">
+
+        <div class="booking-left">
+          <div class="booking-day-label">{{ getDayLabel(booking.startTime) }}</div>
+          <div class="booking-hour">{{ formatHour(booking.startTime) }}</div>
+        </div>
+
+        <div class="booking-center">
+          <div class="student-avatar">
+            {{ booking.studentName?.charAt(0) }}{{ booking.studentFirstSurname?.charAt(0) }}
+          </div>
+          <div class="student-info">
+            <div class="student-name">{{ getStudentName(booking) }}</div>
+            <div class="student-label">Alumno</div>
+          </div>
+        </div>
+
+        <div class="booking-right">
+          <button class="btn-confirm" (click)="confirmBooking(booking.bookingId)">
+            Confirmar ✓
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PRÓXIMAS CLASES CONFIRMADAS -->
+  <section class="section">
+    <h3>Próximas clases <span class="section-subtitle">(próximos 7 días)</span></h3>
+
+    <div class="empty" *ngIf="!loading && !error && confirmedBookings.length === 0">
+      <span class="empty-icon">🎉</span>
+      <p>No tienes clases confirmadas en los próximos 7 días</p>
+      <small>Cuando confirmes una reserva, aparecerá aquí</small>
+    </div>
+
+    <div class="booking-list" *ngIf="!loading && confirmedBookings.length > 0">
+      <div class="booking-card" *ngFor="let booking of confirmedBookings">
+
+        <div class="booking-left">
+          <div class="booking-day-label" [class.today]="isToday(booking.startTime)">
+            {{ getDayLabel(booking.startTime) }}
+          </div>
+          <div class="booking-hour">{{ formatHour(booking.startTime) }}</div>
+        </div>
+
+        <div class="booking-center">
+          <div class="student-avatar">
+            {{ booking.studentName?.charAt(0) }}{{ booking.studentFirstSurname?.charAt(0) }}
+          </div>
+          <div class="student-info">
+            <div class="student-name">{{ getStudentName(booking) }}</div>
+            <div class="student-label">Alumno</div>
+          </div>
+        </div>
+
+        <div class="booking-right">
+          <a class="btn-join" href="#">Unirse a la clase →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,124 @@
+<div class="form-container">
+  <form #form="ngForm" (ngSubmit)="submit()" class="form-card">
+
+    <h2>Completa tu perfil de profesor</h2>
+
+    <!-- BIO -->
+    <div class="bio-wrapper">
+      <textarea
+        [(ngModel)]="teacher.bio"
+        name="bio"
+        #bio="ngModel"
+        placeholder="Cuéntanos sobre ti"
+        maxlength="200"
+        (ngModelChange)="onInputChange('bio')"
+      ></textarea>
+      <span class="char-counter" [class.counter-limit]="teacher.bio.length >= 180">
+        {{ teacher.bio.length }}/200
+      </span>
+    </div>
+    <p class="error" *ngIf="frontErrors['bio'] && (bio.touched || form.submitted)">
+      {{ frontErrors['bio'] }}
+    </p>
+    <p class="error" *ngIf="!frontErrors['bio'] && backErrors['bio']">
+      {{ backErrors['bio'] }}
+    </p>
+
+    <!-- PRECIO -->
+    <input
+      type="number"
+      [(ngModel)]="teacher.pricePerHour"
+      name="price"
+      #price="ngModel"
+      placeholder="Precio por hora"
+      min="1"
+      max="500"
+      (ngModelChange)="onInputChange('price')"
+    />
+    <p class="error" *ngIf="frontErrors['price'] && (price.touched || form.submitted)">
+      {{ frontErrors['price'] }}
+    </p>
+    <p class="error" *ngIf="!frontErrors['price'] && backErrors['price']">
+      {{ backErrors['price'] }}
+    </p>
+
+    <!-- TEACHING -->
+    <h3>¿Qué idiomas vas a enseñar?</h3>
+
+    <div class="custom-select" [class.select-error]="frontErrors['teaching'] && formSubmitted"
+         (click)="toggleTeaching(); $event.stopPropagation()">
+      <div class="select-display">
+        <span class="placeholder">Selecciona un idioma</span>
+        <span class="arrow" [class.open]="showTeaching">▾</span>
+      </div>
+      <div class="dropdown" *ngIf="showTeaching">
+        <div
+          *ngFor="let lang of availableTeachingLanguages"
+          class="dropdown-item"
+          (click)="selectTeaching(lang); $event.stopPropagation()"
+        >
+          {{ lang.name }}
+        </div>
+        <div *ngIf="availableTeachingLanguages.length === 0" class="dropdown-empty">
+          No hay más idiomas disponibles
+        </div>
+      </div>
+    </div>
+    <p class="error" *ngIf="frontErrors['teaching'] && formSubmitted">
+      {{ frontErrors['teaching'] }}
+    </p>
+    <p class="error" *ngIf="!frontErrors['teaching'] && backErrors['teaching']">
+      {{ backErrors['teaching'] }}
+    </p>
+
+    <div class="tags" *ngIf="teacher.teachingLanguages.length">
+      <span *ngFor="let lang of teacher.teachingLanguages" class="tag">
+        {{ lang.name }}
+        <button type="button" (click)="removeTeaching(lang)">×</button>
+      </span>
+    </div>
+
+    <!-- SPOKEN -->
+    <h3>¿Con qué idiomas te comunicarás con los alumnos?</h3>
+
+    <div class="custom-select" [class.select-error]="frontErrors['spoken'] && formSubmitted"
+         (click)="toggleSpoken(); $event.stopPropagation()">
+      <div class="select-display">
+        <span class="placeholder">Selecciona un idioma</span>
+        <span class="arrow" [class.open]="showSpoken">▾</span>
+      </div>
+      <div class="dropdown" *ngIf="showSpoken">
+        <div
+          *ngFor="let lang of availableSpokenLanguages"
+          class="dropdown-item"
+          (click)="selectSpoken(lang); $event.stopPropagation()"
+        >
+          {{ lang.name }}
+        </div>
+        <div *ngIf="availableSpokenLanguages.length === 0" class="dropdown-empty">
+          No hay más idiomas disponibles
+        </div>
+      </div>
+    </div>
+    <p class="error" *ngIf="frontErrors['spoken'] && formSubmitted">
+      {{ frontErrors['spoken'] }}
+    </p>
+    <p class="error" *ngIf="!frontErrors['spoken'] && backErrors['spoken']">
+      {{ backErrors['spoken'] }}
+    </p>
+
+    <div class="tags" *ngIf="teacher.spokenLanguages.length">
+      <span *ngFor="let lang of teacher.spokenLanguages" class="tag">
+        {{ lang.name }}
+        <button type="button" (click)="removeSpoken(lang)">×</button>
+      </span>
+    </div>
+
+    <button type="submit">Crear perfil</button>
+
+    <p class="error" *ngIf="backErrors['general']">
+      {{ backErrors['general'] }}
+    </p>
+
+  </form>
+</div>

@@ -1,0 +1,177 @@
+<div class="search-container">
+
+  <div class="search-header">
+    <h2>Buscar profesores</h2>
+    <p>Encuentra el profesor ideal filtrando por precio, idioma y disponibilidad</p>
+  </div>
+
+  <div class="filters-card">
+    <div class="filters-grid">
+
+      <div class="filter-group">
+        <label>Precio por hora (€)</label>
+        <div class="price-range">
+          <input type="number" [(ngModel)]="filters.minPrice" placeholder="Mín" min="1" max="500" />
+          <span>—</span>
+          <input type="number" [(ngModel)]="filters.maxPrice" placeholder="Máx" min="1" max="500" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Idioma que enseña</label>
+        <input type="text" [(ngModel)]="filters.teachingLanguage" placeholder="Ej: Inglés" />
+      </div>
+
+      <div class="filter-group">
+        <label>Idioma de comunicación</label>
+        <input type="text" [(ngModel)]="filters.spokenLanguage" placeholder="Ej: Español" />
+      </div>
+
+      <div class="filter-group">
+        <label>Disponibilidad</label>
+        <div class="availability-inputs">
+          <input type="date" [(ngModel)]="filters.date" [min]="today()" />
+          <select [(ngModel)]="filters.hour">
+            <option [ngValue]="null">Hora</option>
+            <option *ngFor="let h of hours" [ngValue]="h">{{ h }}:00</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Ordenar por precio</label>
+        <div class="sort-buttons">
+          <button type="button"
+            [class.active]="filters.sortOrder === 'asc'"
+            (click)="filters.sortOrder = 'asc'">
+            ↑ Menor precio
+          </button>
+          <button type="button"
+            [class.active]="filters.sortOrder === 'desc'"
+            (click)="filters.sortOrder = 'desc'">
+            ↓ Mayor precio
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="filters-actions">
+      <button type="button" class="btn-clear" (click)="clearFilters()">Limpiar</button>
+      <button type="button" class="btn-search" (click)="search()">Buscar</button>
+    </div>
+  </div>
+
+  <div class="results">
+
+    <p class="results-count" *ngIf="searched && !loading">
+      {{ teachers.length }} profesor{{ teachers.length !== 1 ? 'es' : '' }} encontrado{{ teachers.length !== 1 ? 's' : '' }}
+    </p>
+
+    <div class="loading" *ngIf="loading">Buscando...</div>
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div class="teacher-card" *ngFor="let teacher of teachers">
+      <div class="teacher-info">
+        <div class="teacher-name">{{ getFullName(teacher) }}</div>
+        <div class="teacher-bio" *ngIf="teacher.bio">{{ teacher.bio }}</div>
+        <div class="teacher-languages">
+          <span class="lang-tag">🎓 {{ getLanguageNames(teacher.teachingLanguages) }}</span>
+          <span class="lang-tag">💬 {{ getLanguageNames(teacher.spokenLanguages) }}</span>
+        </div>
+      </div>
+      <div class="teacher-right">
+        <div class="teacher-price">
+          <span class="price">{{ teacher.pricePerHour }}€</span>
+          <span class="price-label">por hora</span>
+        </div>
+        <button class="btn-book" (click)="openBooking(teacher)">Reservar clase</button>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="searched && !loading && teachers.length === 0">
+      No se encontraron profesores con esos filtros.
+    </div>
+
+  </div>
+
+</div>
+
+<!-- POPUP -->
+<!-- POPUP -->
+<div class="popup-overlay" *ngIf="showPopup" (click)="closePopup()">
+  <div class="popup-card" (click)="$event.stopPropagation()">
+
+    <div class="popup-header">
+      <div class="popup-title-group">
+        <button class="popup-back" *ngIf="step === 2" (click)="goBackToCalendar()">‹</button>
+        <h3>{{ step === 1 ? 'Elige un día' : 'Elige un horario' }}</h3>
+      </div>
+      <button class="popup-close" (click)="closePopup()">×</button>
+    </div>
+
+    <p class="popup-teacher">con <strong>{{ getFullName(selectedTeacher) }}</strong></p>
+
+    <!-- ÉXITO -->
+    <div class="popup-success" *ngIf="bookingSuccess">
+      ✅ ¡Reserva confirmada!
+    </div>
+
+    <!-- CARGANDO -->
+    <div class="popup-loading" *ngIf="loadingSlots && !bookingSuccess">
+      Cargando disponibilidad...
+    </div>
+
+    <!-- PASO 1: CALENDARIO -->
+    <div class="calendar-popup" *ngIf="step === 1 && !loadingSlots && !bookingSuccess">
+
+      <div class="cal-nav">
+        <button type="button" (click)="prevMonth()">‹</button>
+        <span>{{ monthLabel() }}</span>
+        <button type="button" (click)="nextMonth()">›</button>
+      </div>
+
+      <div class="cal-weekdays">
+        <span *ngFor="let d of ['L','M','X','J','V','S','D']">{{ d }}</span>
+      </div>
+
+      <div class="cal-grid">
+        <div
+          *ngFor="let day of calendarDays"
+          class="cal-day"
+          [class.empty]="!day"
+          [class.available]="day && isAvailable(day)"
+          [class.past]="day && isPastDate(day)"
+          [class.selected]="day && dateStr(day) === selectedDate"
+          (click)="day && selectDay(day)"
+        >
+          {{ day ? day.getDate() : '' }}
+        </div>
+      </div>
+
+      <p class="cal-hint">Los días en naranja tienen disponibilidad</p>
+    </div>
+
+    <!-- PASO 2: HORAS -->
+    <div class="slots-grid" *ngIf="step === 2 && !bookingSuccess">
+      <div
+        *ngFor="let slot of slotsForSelectedDay"
+        class="slot-btn"
+        [class.selected]="selectedSlot === slot"
+        (click)="selectedSlot = slot; bookingError = ''"
+      >
+        {{ formatSlotHour(slot.startTime) }}
+      </div>
+    </div>
+
+    <p class="popup-error" *ngIf="bookingError">{{ bookingError }}</p>
+
+    <div class="popup-divider" *ngIf="!bookingSuccess && step === 2"></div>
+
+    <div class="popup-actions" *ngIf="!bookingSuccess && step === 2">
+      <button class="btn-clear" (click)="goBackToCalendar()">Atrás</button>
+      <button class="btn-search" (click)="confirmBooking()">Reservar</button>
+    </div>
+
+  </div>
+</div>

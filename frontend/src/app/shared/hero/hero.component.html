@@ -1,0 +1,31 @@
+<div class="hero">
+
+  <h1>Aprende idiomas con profesores reales</h1>
+  <p>Clases online personalizadas cuando quieras</p>
+
+  <img src="assets/logo.png" alt="PolyParrot" class="hero-image" />
+
+  <div class="search-box">
+
+    <div class="custom-select" (click)="$event.stopPropagation(); showDropdown = !showDropdown">
+      <div class="select-display">
+        <span *ngIf="!selectedLanguage" class="placeholder">¿Qué quieres aprender?</span>
+        <span *ngIf="selectedLanguage" class="selected-lang">{{ selectedLanguage.name }}</span>
+        <span class="arrow" [class.open]="showDropdown">▾</span>
+      </div>
+      <div class="dropdown" *ngIf="showDropdown">
+        <div
+          *ngFor="let lang of languages"
+          class="dropdown-item"
+          (click)="selectLanguage(lang); $event.stopPropagation()"
+        >
+          {{ lang.name }}
+        </div>
+      </div>
+    </div>
+
+    <button (click)="search()">Buscar</button>
+
+  </div>
+
+</div>
