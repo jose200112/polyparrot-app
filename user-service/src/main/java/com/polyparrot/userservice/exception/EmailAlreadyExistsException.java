@@ -2,6 +2,6 @@ package com.polyparrot.userservice.exception;
 
 public class EmailAlreadyExistsException extends RuntimeException {
     public EmailAlreadyExistsException() {
-        super("Email already exists");
+        super("Este email ya está registrado");
     }
 }

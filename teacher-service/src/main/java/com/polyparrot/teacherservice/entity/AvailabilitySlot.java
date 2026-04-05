@@ -20,7 +20,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AvailabilitySlot {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,5 +28,4 @@ public class AvailabilitySlot {
     private Long teacherId;
 
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
 }

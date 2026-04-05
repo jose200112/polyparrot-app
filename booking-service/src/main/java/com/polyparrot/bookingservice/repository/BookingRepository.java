@@ -20,7 +20,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	    WHERE b.teacherId = :teacherId
 	    AND b.startTime < :end
 	    AND b.endTime > :start
-	    AND b.status = 'CONFIRMED'
+	    AND b.status IN ('CONFIRMED', 'PENDING')
 	""")
 	List<Booking> findOverlappingBookingsForUpdate(
 	    Long teacherId,
@@ -34,4 +34,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 	boolean existsByTeacherIdAndStartTimeAndEndTimeAndStatus(Long teacherId, LocalDateTime localDateTime,
 			LocalDateTime localDateTime2, BookingStatus confirmed);
+	
+	List<Booking> findByTeacherIdAndStatusAndStartTimeAfter(
+		    Long teacherId,
+		    BookingStatus status,
+		    LocalDateTime after
+		);
+	
+	List<Booking> findByTeacherIdAndStartTimeAfterAndStatusIn(
+		    Long teacherId,
+		    LocalDateTime after,
+		    List<BookingStatus> statuses
+		);
+	
+	List<Booking> findByTeacherIdAndStatusIn(Long teacherId, List<BookingStatus> statuses);
 }

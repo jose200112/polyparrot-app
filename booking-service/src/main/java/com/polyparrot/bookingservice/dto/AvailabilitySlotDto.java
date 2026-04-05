@@ -9,5 +9,8 @@ public class AvailabilitySlotDto {
     private Long id;
     private Long teacherId;
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
+
+    public LocalDateTime getEndTime() {
+        return startTime != null ? startTime.plusHours(1) : null;
+    }
 }
