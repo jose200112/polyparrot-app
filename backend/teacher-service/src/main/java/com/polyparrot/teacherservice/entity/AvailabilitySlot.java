@@ -24,8 +24,9 @@ public class AvailabilitySlot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "teacher_id")
+    @Column(name = "teacher_id", nullable = false)
     private Long teacherId;
 
+    @Column(nullable = false)
     private LocalDateTime startTime;
 }

@@ -15,6 +15,9 @@ import com.polyparrot.bookingservice.entity.Booking;
 import com.polyparrot.bookingservice.entity.BookingConfirmedEvent;
 import com.polyparrot.bookingservice.event.BookingCreatedEvent;
 import com.polyparrot.bookingservice.event.BookingEventProducer;
+import com.polyparrot.bookingservice.exception.BookingAlreadyCancelledException;
+import com.polyparrot.bookingservice.exception.BookingCancellationNotAllowedException;
+import com.polyparrot.bookingservice.exception.BookingNotPendingException;
 import com.polyparrot.bookingservice.exception.InvalidBookingTimeException;
 import com.polyparrot.bookingservice.exception.SlotAlreadyBookedException;
 import com.polyparrot.bookingservice.exception.SlotNotAvailableException;
@@ -105,13 +108,13 @@ public class BookingService {
 	        .orElseThrow(() -> new RuntimeException("Booking not found"));
 
 	    if (booking.getStatus() == BookingStatus.CANCELLED) {
-	        throw new RuntimeException("La reserva ya está cancelada");
+	        throw new BookingAlreadyCancelledException();
 	    }
 	    if (booking.getStartTime().isBefore(LocalDateTime.now())) {
-	        throw new RuntimeException("No puedes cancelar una clase que ya ha pasado");
+	        throw new BookingCancellationNotAllowedException("No puedes cancelar una clase que ya ha pasado");
 	    }
 	    if (booking.getStartTime().isBefore(LocalDateTime.now().plusHours(24))) {
-	        throw new RuntimeException("Solo puedes cancelar con al menos 24h de antelación");
+	        throw new BookingCancellationNotAllowedException("Solo puedes cancelar con al menos 24h de antelación");
 	    }
 
 	    booking.setStatus(BookingStatus.CANCELLED);
@@ -203,7 +206,7 @@ public class BookingService {
 	        .orElseThrow(() -> new RuntimeException("Booking not found"));
 
 	    if (booking.getStatus() != BookingStatus.PENDING) {
-	        throw new RuntimeException("Solo se pueden confirmar reservas pendientes");
+	        throw new BookingNotPendingException();
 	    }
 
 	    booking.setStatus(BookingStatus.CONFIRMED);

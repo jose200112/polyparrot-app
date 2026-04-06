@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalHandler {
 
-	@ExceptionHandler(CannotDeleteSlotException.class) 
-	public ResponseEntity<ErrorResponse> handleCannotDelete(CannotDeleteSlotException ex) { 
-		log.warn("Attempt to delete slot with bookings"); 
-		
-	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(400, ex.getMessage())); 
+	@ExceptionHandler(CannotDeleteSlotException.class)
+	public ResponseEntity<ErrorResponse> handleCannotDelete(CannotDeleteSlotException ex) {
+	    log.warn("Attempt to delete slot with bookings");
+	    return ResponseEntity.status(HttpStatus.CONFLICT)
+	        .body(new ErrorResponse(409, ex.getMessage()));
 	}
 	
 	@ExceptionHandler(TeacherAlreadyExistsException.class) 
@@ -35,5 +35,29 @@ public class GlobalHandler {
 	    ex.getBindingResult().getFieldErrors()
 	        .forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
 	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+	}
+	
+	@ExceptionHandler(TeacherNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleTeacherNotFound(TeacherNotFoundException ex) {
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	        .body(new ErrorResponse(404, ex.getMessage()));
+	}
+	
+	@ExceptionHandler(SlotInPastException.class)
+	public ResponseEntity<ErrorResponse> handleSlotInPast(SlotInPastException ex) {
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	        .body(new ErrorResponse(400, ex.getMessage()));
+	}
+
+	@ExceptionHandler(SlotAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleSlotAlreadyExists(SlotAlreadyExistsException ex) {
+	    return ResponseEntity.status(HttpStatus.CONFLICT)
+	        .body(new ErrorResponse(409, ex.getMessage()));
+	}
+
+	@ExceptionHandler(SlotNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleSlotNotFound(SlotNotFoundException ex) {
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	        .body(new ErrorResponse(404, ex.getMessage()));
 	}
 }

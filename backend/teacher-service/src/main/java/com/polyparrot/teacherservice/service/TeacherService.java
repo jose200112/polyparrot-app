@@ -18,6 +18,7 @@ import com.polyparrot.teacherservice.dto.UpdateTeacherRequest;
 import com.polyparrot.teacherservice.dto.UserDto;
 import com.polyparrot.teacherservice.entity.Language;
 import com.polyparrot.teacherservice.entity.Teacher;
+import com.polyparrot.teacherservice.exception.TeacherNotFoundException;
 import com.polyparrot.teacherservice.repository.LanguageRepository;
 import com.polyparrot.teacherservice.repository.TeacherRepository;
 import com.polyparrot.teacherservice.security.SecurityUtils;
@@ -157,7 +158,7 @@ public class TeacherService {
         Long userId = SecurityUtils.getCurrentUser().getUserId();
 
         Teacher teacher = teacherRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                .orElseThrow(TeacherNotFoundException::new);
 
         if (request.getBio() != null) teacher.setBio(request.getBio());
         if (request.getPricePerHour() != null) teacher.setPricePerHour(request.getPricePerHour());
@@ -188,7 +189,7 @@ public class TeacherService {
     
     public TeacherResponse getTeacherResponseById(Long id) {
         Teacher teacher = teacherRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Teacher not found"));
+            .orElseThrow(TeacherNotFoundException::new);
         return mapToResponse(teacher);
     }
 }

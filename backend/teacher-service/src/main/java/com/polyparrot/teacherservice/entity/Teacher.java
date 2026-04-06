@@ -17,8 +17,14 @@ import lombok.NoArgsConstructor;
 public class Teacher {
     @Id
     private Long userId;
+
+    @Column(length = 200)
     private String bio;
+
+    @Column(nullable = false)
     private Double pricePerHour;
+
+    @Column(nullable = false)
     private Double rating;
 
     @ManyToMany

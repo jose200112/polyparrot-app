@@ -18,20 +18,23 @@ import lombok.Data;
 @Table(name = "bookings")
 @Data
 public class Booking {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "student_id")
+    @Column(name = "student_id", nullable = false)
     private Long studentId;
 
-    @Column(name = "teacher_id")
+    @Column(name = "teacher_id", nullable = false)
     private Long teacherId;
 
+    @Column(nullable = false)
     private LocalDateTime startTime;
+
+    @Column(nullable = false)
     private LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookingStatus status;
 }

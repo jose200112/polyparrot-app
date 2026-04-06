@@ -19,6 +19,7 @@ import com.polyparrot.bookingservice.dto.BookingRequest;
 import com.polyparrot.bookingservice.dto.BookingResponse;
 import com.polyparrot.bookingservice.service.BookingService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,7 +30,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingResponse> create(@RequestBody BookingRequest request) {
+    public ResponseEntity<BookingResponse> create(@Valid @RequestBody BookingRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(bookingService.createBooking(
                 request.getTeacherId(),

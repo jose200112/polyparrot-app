@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class CreateTeacherRequest {
 
-    @Size(max = 1000, message = "La bio no puede superar los 1000 caracteres")
-    private String bio;
+	@Size(max = 200, message = "La bio no puede superar los 200 caracteres")
+	private String bio;
 
     @NotNull(message = "El precio por hora es obligatorio")
     @DecimalMin(value = "1.0", message = "El precio mínimo es 1€")

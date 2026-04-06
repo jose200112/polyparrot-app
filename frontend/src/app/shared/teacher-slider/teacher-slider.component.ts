@@ -28,7 +28,6 @@ export class TeacherSliderComponent {
     this.teacherService.getAllTeachers().subscribe(
       data => {
         this.teachers = data;
-        console.log(data);
       }
     )
   }

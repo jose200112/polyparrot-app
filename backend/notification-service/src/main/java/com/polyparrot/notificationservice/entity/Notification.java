@@ -14,7 +14,7 @@ public class Notification {
     @Id
     private String id;
     private Long userId;
-    private String type; // "BOOKING_CREATED", "BOOKING_CONFIRMED", "BOOKING_CANCELLED"
+    private String type; 
     private String message;
     private Long bookingId;
     private LocalDateTime startTime;

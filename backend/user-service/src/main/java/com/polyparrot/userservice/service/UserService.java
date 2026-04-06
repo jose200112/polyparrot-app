@@ -7,6 +7,7 @@ import com.polyparrot.userservice.dto.UpdateUserRequest;
 import com.polyparrot.userservice.dto.UserDto;
 import com.polyparrot.userservice.dto.UserResponse;
 import com.polyparrot.userservice.entity.User;
+import com.polyparrot.userservice.exception.UserNotFoundException;
 import com.polyparrot.userservice.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class UserService {
                 .getAuthentication()
                 .getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -35,7 +36,7 @@ public class UserService {
     }
     
 	public UserDto getUserById(Long id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 		return UserDto.builder()
 				.id(user.getId())
 				.name(user.getName())
@@ -47,7 +48,7 @@ public class UserService {
 	public UserResponse updateCurrentUser(UpdateUserRequest request) {
 	    String email = SecurityContextHolder.getContext().getAuthentication().getName();
 	    User user = userRepository.findByEmail(email)
-	            .orElseThrow(() -> new RuntimeException("User not found"));
+	            .orElseThrow(UserNotFoundException::new);
 
 	    if (request.getName() != null) user.setName(request.getName());
 	    if (request.getFirstSurname() != null) user.setFirstSurname(request.getFirstSurname());

@@ -9,6 +9,9 @@ import com.polyparrot.teacherservice.client.BookingClient;
 import com.polyparrot.teacherservice.dto.AvailabilitySlotResponse;
 import com.polyparrot.teacherservice.entity.AvailabilitySlot;
 import com.polyparrot.teacherservice.exception.CannotDeleteSlotException;
+import com.polyparrot.teacherservice.exception.SlotAlreadyExistsException;
+import com.polyparrot.teacherservice.exception.SlotInPastException;
+import com.polyparrot.teacherservice.exception.SlotNotFoundException;
 import com.polyparrot.teacherservice.repository.AvailabilityRepository;
 import com.polyparrot.teacherservice.security.AuthenticatedUser;
 import com.polyparrot.teacherservice.security.SecurityUtils;
@@ -27,11 +30,11 @@ public class AvailabilityService {
         Long teacherId = user.getUserId();
 
         if (start.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("No puedes crear slots en el pasado");
+            throw new SlotInPastException();
         }
         boolean exists = availabilityRepository.existsByTeacherIdAndStartTime(teacherId, start);
         if (exists) {
-            throw new RuntimeException("Ya existe un slot en ese horario");
+            throw new SlotAlreadyExistsException();
         }
 
         AvailabilitySlot slot = new AvailabilitySlot();
@@ -49,7 +52,7 @@ public class AvailabilityService {
     
     public void deleteSlot(Long slotId) {
         AvailabilitySlot slot = availabilityRepository.findById(slotId)
-            .orElseThrow(() -> new RuntimeException("Slot not found"));
+            .orElseThrow(SlotNotFoundException::new);
 
         LocalDateTime endTime = slot.getStartTime().plusHours(1);
 

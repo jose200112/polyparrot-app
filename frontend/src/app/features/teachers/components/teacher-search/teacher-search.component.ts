@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TeacherSearchService } from '../../services/teacher-search.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -38,7 +38,7 @@ export class TeacherSearchComponent implements OnInit {
   bookingError = '';
   bookingSuccess = false;
 
-  // Paso 1 — calendario
+  // Calendario
   step: 1 | 2 = 1;
   availableSlots: any[] = [];
   loadingSlots = false;
@@ -48,7 +48,7 @@ export class TeacherSearchComponent implements OnInit {
   availableDates: Set<string> = new Set();
   selectedDate: string = '';
 
-  // Paso 2 — horas
+  // Horas
   slotsForSelectedDay: any[] = [];
   selectedSlot: any = null;
 
@@ -56,7 +56,8 @@ export class TeacherSearchComponent implements OnInit {
     private teacherSearchService: TeacherSearchService,
     private authService: AuthService,
     private http: HttpClient,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
 ngOnInit() {
@@ -109,17 +110,21 @@ ngOnInit() {
   }
 
   // ── POPUP ────────────────────────────────────────────
-  openBooking(teacher: any) {
-    this.selectedTeacher = teacher;
-    this.bookingError = '';
-    this.bookingSuccess = false;
-    this.step = 1;
-    this.selectedDate = '';
-    this.selectedSlot = null;
-    this.currentMonth = new Date();
-    this.showPopup = true;
-    this.loadAvailableSlots(teacher.id);
+openBooking(teacher: any) {
+  if (!this.authService.isLoggedIn()) {
+    this.router.navigate(['/login']);
+    return;
   }
+  this.selectedTeacher = teacher;
+  this.bookingError = '';
+  this.bookingSuccess = false;
+  this.step = 1;
+  this.selectedDate = '';
+  this.selectedSlot = null;
+  this.currentMonth = new Date();
+  this.showPopup = true;
+  this.loadAvailableSlots(teacher.id);
+}
 
   closePopup() {
     this.showPopup = false;
