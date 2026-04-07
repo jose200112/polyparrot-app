@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/bookings/available-teachers").permitAll() 
                 .requestMatchers(HttpMethod.GET, "/bookings/teacher").permitAll()
                 .requestMatchers(HttpMethod.GET, "/bookings/available/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/bookings/teacher").permitAll()
+                .requestMatchers(HttpMethod.GET, "/bookings/available/**").permitAll()
                 .anyRequest().authenticated()
             )
 

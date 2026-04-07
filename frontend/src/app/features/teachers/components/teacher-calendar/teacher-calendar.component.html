@@ -84,14 +84,27 @@
 
     <div class="popup-divider"></div>
 
-    <div class="popup-actions">
-      <button class="btn-close-popup" (click)="closePopup()">Cerrar</button>
-      <button class="btn-confirm-booking"
-        *ngIf="selectedBooking?.status === 'PENDING' && !confirmSuccess"
-        (click)="confirmBooking()">
-        Confirmar ✓
-      </button>
-    </div>
+<div class="popup-actions">
+  <button class="btn-close-popup" (click)="closePopup()">Cerrar</button>
+
+  <button class="btn-confirm-booking"
+    *ngIf="selectedBooking?.status === 'PENDING' && !confirmSuccess"
+    (click)="confirmBooking()">
+    Confirmar ✓
+  </button>
+
+  <button class="btn-cancel-booking"
+    *ngIf="(selectedBooking?.status === 'PENDING' || selectedBooking?.status === 'CONFIRMED') && !confirmSuccess"
+    (click)="cancelBooking()">
+    Cancelar ✗
+  </button>
+
+  <button class="btn-delete-slot"
+    *ngIf="selectedBooking?.status === 'CANCELLED'"
+    (click)="deleteSlotFromPopup()">
+    Eliminar disponibilidad
+  </button>
+</div>
 
   </div>
 </div>

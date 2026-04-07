@@ -123,12 +123,24 @@ export class TeacherCalendarComponent implements OnInit, OnDestroy {
     return slot ? slot.id : null;
   }
 
-  getBooking(dateStr: string, hour: number): any | null {
-    return this.bookings.find(b => {
-      const [datePart, timePart] = (b.startTime as string).split('T');
-      return datePart === dateStr && Number(timePart.split(':')[0]) === hour;
-    }) ?? null;
-  }
+getBooking(dateStr: string, hour: number): any | null {
+  const matches = this.bookings.filter(b => {
+    const [datePart, timePart] = (b.startTime as string).split('T');
+    return datePart === dateStr && Number(timePart.split(':')[0]) === hour;
+  });
+
+  if (matches.length === 0) return null;
+
+  // Priorizar PENDING > CONFIRMED > CANCELLED más reciente
+  const pending = matches.find(b => b.status === 'PENDING');
+  if (pending) return pending;
+
+  const confirmed = matches.find(b => b.status === 'CONFIRMED');
+  if (confirmed) return confirmed;
+
+  // Si solo hay canceladas, devolver la más reciente por id
+  return matches.sort((a, b) => b.id - a.id)[0];
+}
 
   getBookingStatus(dateStr: string, hour: number): string | null {
     const booking = this.getBooking(dateStr, hour);
@@ -213,4 +225,41 @@ export class TeacherCalendarComponent implements OnInit, OnDestroy {
         error: () => this.confirmError = 'Error al confirmar la reserva'
       });
   }
+
+  cancelBooking() {
+  this.http.patch(`http://localhost:8082/bookings/${this.selectedBooking.bookingId}/cancel-by-teacher`, {})
+    .subscribe({
+      next: () => {
+        this.bookings = this.bookings.map(b =>
+          b.bookingId === this.selectedBooking.bookingId
+            ? { ...b, status: 'CANCELLED' }
+            : b
+        );
+        this.selectedBooking = { ...this.selectedBooking, status: 'CANCELLED' };
+        setTimeout(() => this.closePopup(), 1500);
+      },
+      error: (err) => {
+        if (err.status === 400) this.confirmError = err.error;
+        else this.confirmError = 'Error al cancelar la reserva';
+      }
+    });
+}
+
+deleteSlotFromPopup() {
+  const slotId = this.getSlotId(
+    this.selectedBooking.startTime.split('T')[0],
+    Number(this.selectedBooking.startTime.split('T')[1].split(':')[0])
+  );
+  if (slotId === null) {
+    this.closePopup();
+    return;
+  }
+  this.availabilityService.deleteSlot(slotId).subscribe({
+    next: () => {
+      this.slots = this.slots.filter(s => s.id !== slotId);
+      this.closePopup();
+    },
+    error: () => this.confirmError = 'Error al eliminar la disponibilidad'
+  });
+}
 }

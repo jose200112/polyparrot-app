@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -32,29 +33,31 @@ backError: string = '';
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
 login() {
-
   if (!this.validateForm()) return;
 
   this.backError = '';
 
   this.authService.login(this.user).subscribe({
     next: (res: any) => {
+      this.authService.saveAuthData(res.token, res.role, res.userId);
 
-      this.authService.saveAuthData(
-        res.token,
-        res.role,
-        res.userId
-      );
-
-      this.router.navigate(['/dashboard']);
+      if (res.role === 'TEACHER') {
+        this.http.get(`http://localhost:8081/teachers/${res.userId}`).subscribe({
+          next: () => this.router.navigate(['/teacher/home']),
+          error: () => this.router.navigate(['/teacher/setup'])
+        });
+      } else {
+        this.router.navigate(['/student/home']);
+      }
     },
-error: (err) => {
-  this.backError = err.error?.error || 'Error inesperado';
-}
+    error: (err) => {
+      this.backError = err.error?.error || 'Error inesperado';
+    }
   });
 }
 

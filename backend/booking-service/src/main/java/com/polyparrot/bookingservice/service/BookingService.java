@@ -7,16 +7,20 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.polyparrot.bookingservice.client.TeacherClient;
+import com.polyparrot.bookingservice.client.UserClient;
 import com.polyparrot.bookingservice.dto.AvailabilitySlotDto;
 import com.polyparrot.bookingservice.dto.BookingDto;
 import com.polyparrot.bookingservice.dto.BookingResponse;
 import com.polyparrot.bookingservice.dto.TeacherSummaryDto;
+import com.polyparrot.bookingservice.dto.UserDto;
 import com.polyparrot.bookingservice.entity.Booking;
-import com.polyparrot.bookingservice.entity.BookingConfirmedEvent;
+import com.polyparrot.bookingservice.event.BookingCancelledEvent;
+import com.polyparrot.bookingservice.event.BookingConfirmedEvent;
 import com.polyparrot.bookingservice.event.BookingCreatedEvent;
 import com.polyparrot.bookingservice.event.BookingEventProducer;
 import com.polyparrot.bookingservice.exception.BookingAlreadyCancelledException;
 import com.polyparrot.bookingservice.exception.BookingCancellationNotAllowedException;
+import com.polyparrot.bookingservice.exception.BookingNotFoundException;
 import com.polyparrot.bookingservice.exception.BookingNotPendingException;
 import com.polyparrot.bookingservice.exception.InvalidBookingTimeException;
 import com.polyparrot.bookingservice.exception.SlotAlreadyBookedException;
@@ -38,6 +42,9 @@ public class BookingService {
 	private final TeacherClient teacherClient;
 	
 	private final BookingEventProducer bookingEventProducer;
+	
+	private final UserClient userClient;
+
 	
 	@Transactional
 	public BookingResponse createBooking(Long teacherId, LocalDateTime start, LocalDateTime end) {
@@ -80,13 +87,13 @@ public class BookingService {
 
 	    try {
 	        Booking saved = bookingRepository.save(booking);
-	        // Publicar evento Kafka
+	        
+	        UserDto student = userClient.getUserById(studentId);
+	        String studentName = student.getName() + " " + student.getFirstSurname();
+
 	        bookingEventProducer.publishBookingCreated(new BookingCreatedEvent(
-	            saved.getId(),
-	            saved.getTeacherId(),
-	            saved.getStudentId(),
-	            saved.getStartTime(),
-	            saved.getEndTime()
+	            saved.getId(), saved.getTeacherId(), saved.getStudentId(),
+	            saved.getStartTime(), saved.getEndTime(), studentName
 	        ));
 	        return mapToResponse(saved);
 	    } catch (DataIntegrityViolationException e) {
@@ -105,11 +112,19 @@ public class BookingService {
 	
 	public BookingResponse cancelBooking(Long id) {
 	    Booking booking = bookingRepository.findById(id)
-	        .orElseThrow(() -> new RuntimeException("Booking not found"));
+	        .orElseThrow(BookingNotFoundException::new);
 
 	    if (booking.getStatus() == BookingStatus.CANCELLED) {
 	        throw new BookingAlreadyCancelledException();
 	    }
+
+	    boolean wasConfirmed = booking.getStatus() == BookingStatus.CONFIRMED;
+
+	    if (booking.getStatus() == BookingStatus.PENDING) {
+	        booking.setStatus(BookingStatus.CANCELLED);
+	        return mapToResponse(bookingRepository.save(booking));
+	    }
+
 	    if (booking.getStartTime().isBefore(LocalDateTime.now())) {
 	        throw new BookingCancellationNotAllowedException("No puedes cancelar una clase que ya ha pasado");
 	    }
@@ -118,25 +133,37 @@ public class BookingService {
 	    }
 
 	    booking.setStatus(BookingStatus.CANCELLED);
-	    return mapToResponse(bookingRepository.save(booking));
+	    Booking saved = bookingRepository.save(booking);
+
+	    if (wasConfirmed) {
+	        UserDto student = userClient.getUserById(booking.getStudentId());
+	        String studentName = student.getName() + " " + student.getFirstSurname();
+
+	        bookingEventProducer.publishBookingCancelled(new BookingCancelledEvent(
+	            saved.getId(), saved.getTeacherId(), saved.getStudentId(),
+	            saved.getStartTime(), saved.getEndTime(), "STUDENT", studentName
+	        ));
+	    }
+
+	    return mapToResponse(saved);
 	}
 	
 	public List<AvailabilitySlotDto> getAvailableSlots(Long teacherId) {
 
-	    // 1. obtener availability (Feign)
+	    //  obtener availability
 	    List<AvailabilitySlotDto> slots = teacherClient.getAvailability(teacherId);
 
-	    // 2. obtener bookings confirmados
+	    // obtener bookings confirmados
 	    List<Booking> bookings = bookingRepository
 	    	    .findByTeacherIdAndStatusIn(
 	    	        teacherId,
 	    	        List.of(BookingStatus.CONFIRMED, BookingStatus.PENDING)
 	    	    );
 
-	    // 3. calcular tiempo mínimo (24h)
+	    // calcular tiempo mínimo (24h)
 	    LocalDateTime minTime = LocalDateTime.now().plusHours(24);
 
-	    // 4. filtrar
+	    // filtrar
 	    return slots.stream()
 	        // solo slots futuros + margen
 	        .filter(slot -> slot.getStartTime().isAfter(minTime))
@@ -212,14 +239,13 @@ public class BookingService {
 	    booking.setStatus(BookingStatus.CONFIRMED);
 	    Booking saved = bookingRepository.save(booking);
 
-	    bookingEventProducer.publishBookingConfirmed(new BookingConfirmedEvent(
-	        saved.getId(),
-	        saved.getTeacherId(),
-	        saved.getStudentId(),
-	        saved.getStartTime(),
-	        saved.getEndTime()
-	    ));
+	    UserDto teacher = userClient.getUserById(booking.getTeacherId());
+	    String teacherName = teacher.getName() + " " + teacher.getFirstSurname();
 
+	    bookingEventProducer.publishBookingConfirmed(new BookingConfirmedEvent(
+	        saved.getId(), saved.getTeacherId(), saved.getStudentId(),
+	        saved.getStartTime(), saved.getEndTime(), teacherName
+	    ));
 	    return mapToResponse(saved);
 	}
 	
@@ -228,7 +254,7 @@ public class BookingService {
 	        .findByTeacherIdAndStartTimeAfterAndStatusIn(
 	            teacherId,
 	            LocalDateTime.now(),
-	            List.of(BookingStatus.CONFIRMED, BookingStatus.PENDING)
+	            List.of(BookingStatus.CONFIRMED, BookingStatus.PENDING, BookingStatus.CANCELLED)
 	        )
 	        .stream()
 	        .map(b -> {
@@ -243,4 +269,36 @@ public class BookingService {
 	        })
 	        .toList();
 	}
+	
+	public BookingResponse cancelByTeacher(Long bookingId) {
+	    Booking booking = bookingRepository.findById(bookingId)
+	        .orElseThrow(BookingNotFoundException::new);
+
+	    if (booking.getStatus() == BookingStatus.CANCELLED) {
+	        throw new BookingAlreadyCancelledException();
+	    }
+
+	    if (booking.getStatus() == BookingStatus.CONFIRMED) {
+	        if (booking.getStartTime().isBefore(LocalDateTime.now())) {
+	            throw new BookingCancellationNotAllowedException("No puedes cancelar una clase que ya ha pasado");
+	        }
+	        if (booking.getStartTime().isBefore(LocalDateTime.now().plusHours(24))) {
+	            throw new BookingCancellationNotAllowedException("Solo puedes cancelar con al menos 24h de antelación");
+	        }
+	    }
+
+	    booking.setStatus(BookingStatus.CANCELLED);
+	    Booking saved = bookingRepository.save(booking);
+
+	    UserDto teacher = userClient.getUserById(booking.getTeacherId());
+	    String teacherName = teacher.getName() + " " + teacher.getFirstSurname();
+
+	    bookingEventProducer.publishBookingCancelled(new BookingCancelledEvent(
+	        saved.getId(), saved.getTeacherId(), saved.getStudentId(),
+	        saved.getStartTime(), saved.getEndTime(), "TEACHER", teacherName
+	    ));
+	    return mapToResponse(saved);
+	}
+	
+	
 }

@@ -347,3 +347,33 @@
 }
 
 .btn-confirm-booking:hover { background: #1b5e20; }
+
+.btn-cancel-booking {
+  flex: 2;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #e53935;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.btn-cancel-booking:hover { background: #c62828; }
+
+.btn-delete-slot {
+  flex: 2;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #555;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.btn-delete-slot:hover { background: #333; }

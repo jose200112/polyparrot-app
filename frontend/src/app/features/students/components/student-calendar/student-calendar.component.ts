@@ -97,12 +97,24 @@ export class StudentCalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-  getBooking(dateStr: string, hour: number): any | null {
-    return this.bookings.find(b => {
-      const [datePart, timePart] = (b.startTime as string).split('T');
-      return datePart === dateStr && Number(timePart.split(':')[0]) === hour;
-    }) ?? null;
-  }
+getBooking(dateStr: string, hour: number): any | null {
+  const matches = this.bookings.filter(b => {
+    const [datePart, timePart] = (b.startTime as string).split('T');
+    return datePart === dateStr && Number(timePart.split(':')[0]) === hour;
+  });
+
+  if (matches.length === 0) return null;
+
+  // Priorizar PENDING > CONFIRMED > CANCELLED más reciente
+  const pending = matches.find(b => b.status === 'PENDING');
+  if (pending) return pending;
+
+  const confirmed = matches.find(b => b.status === 'CONFIRMED');
+  if (confirmed) return confirmed;
+
+  // Si solo hay canceladas, devolver la más reciente por id
+  return matches.sort((a, b) => b.id - a.id)[0];
+}
 
 getCellClass(dateStr: string, hour: number): string {
   if (this.isPast(dateStr, hour)) return 'past';
@@ -159,8 +171,9 @@ getCellClass(dateStr: string, hour: number): string {
     });
   }
 
-  canCancel(booking: any): boolean {
-  if (!booking || booking.status !== 'CONFIRMED') return false;
+canCancel(booking: any): boolean {
+  if (!booking || booking.status === 'CANCELLED') return false;
+  if (booking.status === 'PENDING') return true; 
   const startTime = new Date(booking.startTime);
   const now = new Date();
   const hoursUntilClass = (startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
@@ -168,7 +181,8 @@ getCellClass(dateStr: string, hour: number): string {
 }
 
 getCancelTooltip(booking: any): string {
-  if (!booking || booking.status !== 'CONFIRMED') return '';
+  if (!booking || booking.status === 'CANCELLED') return '';
+  if (booking.status === 'PENDING') return '';
   const startTime = new Date(booking.startTime);
   const now = new Date();
   if (startTime < now) return 'Esta clase ya ha pasado';

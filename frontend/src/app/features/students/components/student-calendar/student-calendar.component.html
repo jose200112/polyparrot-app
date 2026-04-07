@@ -62,13 +62,16 @@
         <span class="popup-label">Hora</span>
         <span class="popup-value">{{ formatHour(selectedBooking.startTime) }}</span>
       </div>
-      <div class="popup-row">
-        <span class="popup-label">Estado</span>
-        <span class="popup-status" [class.confirmed]="selectedBooking.status === 'CONFIRMED'"
-              [class.cancelled]="selectedBooking.status === 'CANCELLED'">
-          {{ selectedBooking.status === 'CONFIRMED' ? 'Confirmada' : 'Cancelada' }}
-        </span>
-      </div>
+<div class="popup-row">
+  <span class="popup-label">Estado</span>
+  <span class="popup-status"
+    [class.confirmed]="selectedBooking.status === 'CONFIRMED'"
+    [class.pending]="selectedBooking.status === 'PENDING'"
+    [class.cancelled]="selectedBooking.status === 'CANCELLED'">
+    {{ selectedBooking.status === 'CONFIRMED' ? 'Confirmada' :
+       selectedBooking.status === 'PENDING' ? 'Pendiente' : 'Cancelada' }}
+  </span>
+</div>
     </div>
 
     <p class="popup-error" *ngIf="cancelError">{{ cancelError }}</p>
@@ -79,7 +82,7 @@
 <div class="popup-actions">
   <button class="btn-close-popup" (click)="closePopup()">Cerrar</button>
 
-  <ng-container *ngIf="selectedBooking?.status === 'CONFIRMED' && !cancelSuccess">
+  <ng-container *ngIf="(selectedBooking?.status === 'CONFIRMED' || selectedBooking?.status === 'PENDING') && !cancelSuccess">
     <button class="btn-cancel-booking"
       *ngIf="canCancel(selectedBooking)"
       (click)="cancelBooking()">

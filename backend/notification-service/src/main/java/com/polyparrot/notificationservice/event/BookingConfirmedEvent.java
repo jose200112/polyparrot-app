@@ -14,4 +14,5 @@ public class BookingConfirmedEvent {
     private Long studentId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String teacherName;
 }

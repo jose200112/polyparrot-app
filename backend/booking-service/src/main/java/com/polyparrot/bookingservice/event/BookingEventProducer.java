@@ -3,8 +3,6 @@ package com.polyparrot.bookingservice.event;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com.polyparrot.bookingservice.entity.BookingConfirmedEvent;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,5 +21,10 @@ public class BookingEventProducer {
     public void publishBookingConfirmed(BookingConfirmedEvent event) {
         kafkaTemplate.send("booking-confirmed", event);
         log.info("Evento booking-confirmed publicado: bookingId={}", event.getBookingId());
+    }
+    
+    public void publishBookingCancelled(BookingCancelledEvent event) {
+        kafkaTemplate.send("booking-cancelled", event);
+        log.info("Evento booking-cancelled publicado: bookingId={}", event.getBookingId());
     }
 }

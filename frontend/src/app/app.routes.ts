@@ -11,71 +11,34 @@ import { TeacherProfileComponent } from './features/teachers/components/teacher-
 import { StudentCalendarComponent } from './features/students/components/student-calendar/student-calendar.component';
 import { StudentProfileComponent } from './features/students/components/student-profile/student-profile.component';
 import { NotificationsComponent } from './shared/notifications/notifications.component';
+import { roleGuard } from './core/guards/role.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { teacherSetupGuard } from './core/guards/teacher-setup.guard';
+import { teacherProfileGuard } from './core/guards/teacher-profile.guard';
+import { guestGuard } from './core/guards/guest.guard';
+import { studentOrGuestGuard } from './core/guards/student-or-guest.guard';
 
 export const routes: Routes = [
+  { path: '', component: HomeComponent, canActivate: [guestGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
+  { path: 'teachers', component: TeacherSearchComponent, canActivate: [studentOrGuestGuard] },
 
-  {
-    path: '',
-    component: HomeComponent
-  },
+  // Solo STUDENT
+  { path: 'student/home', component: HomeStudentComponent, canActivate: [roleGuard('STUDENT')] },
+  { path: 'student/calendar', component: StudentCalendarComponent, canActivate: [roleGuard('STUDENT')] },
+  { path: 'student/profile', component: StudentProfileComponent, canActivate: [roleGuard('STUDENT')] },
 
-  {
-    path: 'teacher/setup',
-    component: TeacherSetupComponent
-  },
+  // Setup — solo profesores SIN perfil
+  { path: 'teacher/setup', component: TeacherSetupComponent, canActivate: [teacherSetupGuard] },
 
-  {
-  path: 'teachers',
-  component: TeacherSearchComponent
-  },
+  // Rutas de profesor — solo profesores CON perfil
+  { path: 'teacher/home', component: HomeTeacherComponent, canActivate: [teacherProfileGuard] },
+  { path: 'teacher/calendar', component: TeacherCalendarComponent, canActivate: [teacherProfileGuard] },
+  { path: 'teacher/profile', component: TeacherProfileComponent, canActivate: [teacherProfileGuard] },
 
-  {
-  path: 'teacher/home',
-  component: HomeTeacherComponent
-  },
+  // Autenticado cualquier rol
+  { path: 'notifications', component: NotificationsComponent, canActivate: [authGuard] },
 
-  {
-    path: 'teacher/calendar',
-    component: TeacherCalendarComponent
-  },
-
-  {
-  path: 'teacher/profile',
-  component: TeacherProfileComponent
-  },
-
-  {
-    path: 'student/home',
-    component: HomeStudentComponent
-  },
-
-  {
-  path: 'student/calendar',
-  component: StudentCalendarComponent
-  },
-
-  {
-  path: 'student/profile',
-  component: StudentProfileComponent
-  },
-
-  {
-    path: 'register',
-    component: RegisterComponent
-  },
-
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-
-  {
-  path: 'notifications',
-  component: NotificationsComponent
-  },
-
-  {
-    path: '**',
-    redirectTo: ''
-  }
+  { path: '**', redirectTo: '' }
 ];

@@ -1,6 +1,7 @@
 package com.polyparrot.notificationservice.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.polyparrot.notificationservice.entity.Notification;
@@ -15,32 +16,36 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    public void createBookingCreatedNotification(Long teacherId, Long bookingId, LocalDateTime startTime) {
+    public void createBookingCreatedNotification(Long teacherId, Long bookingId, 
+            LocalDateTime startTime, String studentName) {
+        String formattedDate = startTime.format(
+            DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm"));
         Notification notification = Notification.builder()
             .userId(teacherId)
             .type("BOOKING_CREATED")
-            .message("Tienes una nueva reserva pendiente de confirmación")
+            .message(studentName + " ha reservado una clase el " + formattedDate)
             .bookingId(bookingId)
             .startTime(startTime)
             .read(false)
             .createdAt(LocalDateTime.now())
             .build();
         notificationRepository.save(notification);
-        log.info("Notificación BOOKING_CREATED guardada para teacherId={}", teacherId);
     }
 
-    public void createBookingConfirmedNotification(Long studentId, Long bookingId, LocalDateTime startTime) {
+    public void createBookingConfirmedNotification(Long studentId, Long bookingId,
+            LocalDateTime startTime, String teacherName) {
+        String formattedDate = startTime.format(
+            DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm"));
         Notification notification = Notification.builder()
             .userId(studentId)
             .type("BOOKING_CONFIRMED")
-            .message("Tu reserva ha sido confirmada")
+            .message(teacherName + " ha confirmado tu clase del " + formattedDate)
             .bookingId(bookingId)
             .startTime(startTime)
             .read(false)
             .createdAt(LocalDateTime.now())
             .build();
         notificationRepository.save(notification);
-        log.info("Notificación BOOKING_CONFIRMED guardada para studentId={}", studentId);
     }
 
     public List<Notification> getNotifications(Long userId) {
@@ -55,5 +60,37 @@ public class NotificationService {
         List<Notification> unread = notificationRepository.findByUserIdAndReadFalse(userId);
         unread.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(unread);
+    }
+    
+    public void createBookingCancelledNotification(Long studentId, Long bookingId,
+            LocalDateTime startTime, String teacherName) {
+        String formattedDate = startTime.format(
+            DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm"));
+        Notification notification = Notification.builder()
+            .userId(studentId)
+            .type("BOOKING_CANCELLED")
+            .message(teacherName + " ha cancelado tu clase del " + formattedDate)
+            .bookingId(bookingId)
+            .startTime(startTime)
+            .read(false)
+            .createdAt(LocalDateTime.now())
+            .build();
+        notificationRepository.save(notification);
+    }
+
+    public void createBookingCancelledByStudentNotification(Long teacherId, Long bookingId,
+            LocalDateTime startTime, String studentName) {
+        String formattedDate = startTime.format(
+            DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm"));
+        Notification notification = Notification.builder()
+            .userId(teacherId)
+            .type("BOOKING_CANCELLED")
+            .message(studentName + " ha cancelado la clase del " + formattedDate)
+            .bookingId(bookingId)
+            .startTime(startTime)
+            .read(false)
+            .createdAt(LocalDateTime.now())
+            .build();
+        notificationRepository.save(notification);
     }
 }

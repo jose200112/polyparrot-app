@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingCreatedEvent {
+public class BookingConfirmedEvent {
     private Long bookingId;
     private Long teacherId;
     private Long studentId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String studentName;
+    private String teacherName;
 }

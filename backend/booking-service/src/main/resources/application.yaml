@@ -22,3 +22,5 @@ jwt:
 
 teacher-service:
   url: http://localhost:8081
+user-service:
+  url: http://localhost:8080

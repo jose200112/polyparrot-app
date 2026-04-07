@@ -27,59 +27,54 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/bookings")
 public class BookingController {
 
-    private final BookingService bookingService;
+	private final BookingService bookingService;
 
-    @PostMapping
-    public ResponseEntity<BookingResponse> create(@Valid @RequestBody BookingRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(bookingService.createBooking(
-                request.getTeacherId(),
-                request.getStartTime(),
-                request.getEndTime()
-            ));
-    }
+	@PostMapping
+	public ResponseEntity<BookingResponse> create(@Valid @RequestBody BookingRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(
+				bookingService.createBooking(request.getTeacherId(), request.getStartTime(), request.getEndTime()));
+	}
 
-    @GetMapping("/me")
-    public List<BookingResponse> myBookings() {
-        return bookingService.getMyBookings();
-    }
-    
+	@GetMapping("/me")
+	public List<BookingResponse> myBookings() {
+		return bookingService.getMyBookings();
+	}
 
-@PatchMapping("/{id}/cancel")
-public ResponseEntity<BookingResponse> cancel(@PathVariable Long id) {
-    return ResponseEntity.ok(bookingService.cancelBooking(id));
-}
-    
-    @GetMapping("/available/{teacherId}")
-    public List<AvailabilitySlotDto> getAvailableSlots(@PathVariable Long teacherId) {
-        return bookingService.getAvailableSlots(teacherId);
-    }
-    
-    @GetMapping("/check")
-    public boolean hasBookings(
-    		@RequestParam Long teacherId,
-    		@RequestParam String startTime,
-    		@RequestParam String endTime) {
-    	
-    	return bookingService.hasBookings(teacherId, startTime, endTime);
-    }
-    
-    @GetMapping("/teacher")
-    public ResponseEntity<List<BookingDto>> getBookingsByTeacher(@RequestParam Long teacherId) {
-        return ResponseEntity.ok(bookingService.getBookingsByTeacherInternal(teacherId));
-    }
-    
-    @GetMapping("/available-teachers")
-    public List<Long> getAvailableTeacherIds(
-            @RequestParam String startTime,
-            @RequestParam String endTime) {
-        return bookingService.getAvailableTeacherIds(startTime, endTime);
-    }
-    
-    @PatchMapping("/{id}/confirm")
-    public ResponseEntity<BookingResponse> confirm(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.confirmBooking(id));
-    }
-    
-    
+	@PatchMapping("/{id}/cancel")
+	public ResponseEntity<BookingResponse> cancel(@PathVariable Long id) {
+		return ResponseEntity.ok(bookingService.cancelBooking(id));
+	}
+
+	@PatchMapping("/{id}/cancel-by-teacher")
+	public ResponseEntity<BookingResponse> cancelByTeacher(@PathVariable Long id) {
+		return ResponseEntity.ok(bookingService.cancelByTeacher(id));
+	}
+
+	@GetMapping("/available/{teacherId}")
+	public List<AvailabilitySlotDto> getAvailableSlots(@PathVariable Long teacherId) {
+		return bookingService.getAvailableSlots(teacherId);
+	}
+
+	@GetMapping("/check")
+	public boolean hasBookings(@RequestParam Long teacherId, @RequestParam String startTime,
+			@RequestParam String endTime) {
+
+		return bookingService.hasBookings(teacherId, startTime, endTime);
+	}
+
+	@GetMapping("/teacher")
+	public ResponseEntity<List<BookingDto>> getBookingsByTeacher(@RequestParam Long teacherId) {
+		return ResponseEntity.ok(bookingService.getBookingsByTeacherInternal(teacherId));
+	}
+
+	@GetMapping("/available-teachers")
+	public List<Long> getAvailableTeacherIds(@RequestParam String startTime, @RequestParam String endTime) {
+		return bookingService.getAvailableTeacherIds(startTime, endTime);
+	}
+
+	@PatchMapping("/{id}/confirm")
+	public ResponseEntity<BookingResponse> confirm(@PathVariable Long id) {
+		return ResponseEntity.ok(bookingService.confirmBooking(id));
+	}
+
 }
