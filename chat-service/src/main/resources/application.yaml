@@ -1,0 +1,10 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://admin:secret@localhost:27017/chat_db?authSource=admin
+
+server:
+  port: 8084
+
+jwt:
+  secret: polyparrotpolyparrotpolyparrotpolyparrot

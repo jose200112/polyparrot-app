@@ -10,6 +10,21 @@ body {
     
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+router-outlet + * {
+  flex: 1;
+}
+
 .student-layout .navbar {
   position: sticky;
   top: 0;
@@ -137,7 +152,7 @@ body {
   background: linear-gradient(135deg, #111, #1a1a1a);
   color: #eee;
   padding: 60px 20px 25px;
-  margin-top: 80px;
+  margin-top: 0;
 
   border-top: 2px solid rgba(255, 255, 255, 0.05);
 }

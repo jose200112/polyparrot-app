@@ -7,15 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/auth'; // 🔥 ajusta backend
+  private apiUrl = 'http://localhost:8080/auth'; 
 
   constructor(private http: HttpClient) { }
 
-  saveAuthData(token: string, role: string, userId: number) { 
-    localStorage.setItem('token', token); 
-    localStorage.setItem('role', role); 
-    localStorage.setItem('userId', userId.toString()); 
-  }
+saveAuthData(token: string, role: string, userId: number, name: string) {
+  localStorage.setItem('token', token);
+  localStorage.setItem('role', role);
+  localStorage.setItem('userId', userId.toString());
+  localStorage.setItem('name', name);
+}
 
   getUserId(): string | null {
     return localStorage.getItem('userId');
@@ -24,6 +25,10 @@ export class AuthService {
   getRole(): string | null {
     return localStorage.getItem('role');
   }
+
+  getName(): string {
+  return localStorage.getItem('name') ?? '';
+}
 
 
   // 🔹 OBTENER TOKEN
@@ -56,6 +61,7 @@ logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('role');
   localStorage.removeItem('userId');
+  localStorage.removeItem('name');
 }
 
   // 🔹 ESTÁ LOGUEADO

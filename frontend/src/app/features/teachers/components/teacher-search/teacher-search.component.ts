@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
+import { ChatService } from '../../../chat/service/chat.service';
 
 @Component({
   selector: 'app-teacher-search',
@@ -57,7 +58,8 @@ export class TeacherSearchComponent implements OnInit {
     private authService: AuthService,
     private http: HttpClient,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private chatService: ChatService
   ) {}
 
 ngOnInit() {
@@ -223,31 +225,48 @@ openBooking(teacher: any) {
   }
 
   // ── CONFIRMAR RESERVA ────────────────────────────────
-  confirmBooking() {
-    if (!this.selectedSlot) {
-      this.bookingError = 'Selecciona un horario';
-      return;
-    }
-
-    const startTime = this.selectedSlot.startTime;
-    const endTime = this.selectedSlot.startTime.replace(/T(\d{2})/, (_: string, h: string) =>
-      `T${String(Number(h) + 1).padStart(2, '0')}`
-    );
-
-    this.http.post('http://localhost:8082/bookings', {
-      teacherId: this.selectedTeacher.id,
-      startTime,
-      endTime
-    }).subscribe({
-      next: () => {
-        this.bookingSuccess = true;
-        setTimeout(() => this.closePopup(), 1800);
-      },
-      error: (err) => {
-        if (err.status === 409) this.bookingError = 'Ese horario ya está reservado';
-        else if (err.status === 400) this.bookingError = 'Las reservas deben hacerse con al menos 24h de antelación';
-        else this.bookingError = 'Error al realizar la reserva';
-      }
-    });
+confirmBooking() {
+  if (!this.selectedSlot) {
+    this.bookingError = 'Selecciona un horario';
+    return;
   }
+
+  const startTime = this.selectedSlot.startTime;
+  const endTime = this.selectedSlot.startTime.replace(/T(\d{2})/, (_: string, h: string) =>
+    `T${String(Number(h) + 1).padStart(2, '0')}`
+  );
+
+  this.http.post('http://localhost:8082/bookings', {
+    teacherId: this.selectedTeacher.id,
+    startTime,
+    endTime
+  }).subscribe({
+    next: () => {
+      this.bookingSuccess = true;
+
+      // Inicializar conversación
+      this.http.post('http://localhost:8084/chat/conversation/init', {
+        userId1: Number(this.authService.getUserId()),
+        userId2: this.selectedTeacher.id,
+        name1: this.authService.getName(),
+        name2: this.getFullName(this.selectedTeacher)
+      }).subscribe();
+
+      setTimeout(() => this.closePopup(), 1800);
+    },
+    error: (err) => {
+      if (err.status === 409) this.bookingError = 'Ese horario ya está reservado';
+      else if (err.status === 400) this.bookingError = 'Las reservas deben hacerse con al menos 24h de antelación';
+      else this.bookingError = 'Error al realizar la reserva';
+    }
+  });
+}
+
+  openChat(teacher: any) {
+  if (!this.authService.isLoggedIn()) {
+    this.router.navigate(['/login']);
+    return;
+  }
+  this.chatService.openChatWith(teacher.id, this.getFullName(teacher));
+}
 }

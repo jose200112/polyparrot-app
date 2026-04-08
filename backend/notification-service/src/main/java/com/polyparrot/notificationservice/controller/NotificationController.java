@@ -29,4 +29,6 @@ public class NotificationController {
         notificationService.markAllAsRead(userId);
         return ResponseEntity.noContent().build();
     }
+    
+    
 }

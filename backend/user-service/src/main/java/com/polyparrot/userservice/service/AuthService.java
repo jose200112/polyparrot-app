@@ -65,16 +65,18 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(
-                user.getEmail(),
-                user.getId(),
-                user.getRole().name()
-        );
+        	    user.getEmail(),
+        	    user.getId(),
+        	    user.getRole().name(),
+        	    user.getName() + " " + user.getFirstSurname()
+        	);
 
         return new AuthResponse(
-                token,
-                user.getId(),
-                user.getRole().name()
-        );
+        	    token,
+        	    user.getId(),
+        	    user.getRole().name(),
+        	    user.getName() + " " + user.getFirstSurname()
+        	);
     }
     
     public Map<String, String> validateRegister(RegisterRequest request) {

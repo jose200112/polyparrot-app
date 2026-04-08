@@ -80,13 +80,16 @@
           <span class="lang-tag">💬 {{ getLanguageNames(teacher.spokenLanguages) }}</span>
         </div>
       </div>
-      <div class="teacher-right">
-        <div class="teacher-price">
-          <span class="price">{{ teacher.pricePerHour }}€</span>
-          <span class="price-label">por hora</span>
-        </div>
-        <button class="btn-book" (click)="openBooking(teacher)">Reservar clase</button>
-      </div>
+<div class="teacher-right">
+  <div class="teacher-price">
+    <span class="price">{{ teacher.pricePerHour }}€</span>
+    <span class="price-label">por hora</span>
+  </div>
+  <div class="teacher-actions">
+    <button class="btn-message" (click)="openChat(teacher)">Enviar mensaje</button>
+    <button class="btn-book" (click)="openBooking(teacher)">Reservar clase</button>
+  </div>
+</div>
     </div>
 
     <div class="empty" *ngIf="searched && !loading && teachers.length === 0">

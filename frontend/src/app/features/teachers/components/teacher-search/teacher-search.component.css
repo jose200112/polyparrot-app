@@ -633,3 +633,41 @@
   color: white;
   font-weight: 600;
 }
+
+.teacher-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-book, .btn-message {
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.btn-book {
+  background: #ff7a00;
+  color: white;
+  border: 2px solid #ff7a00;
+}
+
+.btn-book:hover {
+  background: #e65c00;
+  border-color: #e65c00;
+}
+
+.btn-message {
+  background: white;
+  color: #ff7a00;
+  border: 2px solid #ff7a00;
+}
+
+.btn-message:hover {
+  background: #ff7a00;
+  color: white;
+}

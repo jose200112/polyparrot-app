@@ -1,0 +1,54 @@
+<div class="chat-float-wrapper">
+
+  <!-- ICONO FLOTANTE -->
+  <button class="chat-fab" (click)="toggleOpen()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+    </svg>
+    <span class="fab-badge" *ngIf="totalUnread > 0">{{ totalUnread }}</span>
+  </button>
+
+  <!-- PANEL -->
+  <div class="chat-panel" *ngIf="isOpen">
+
+    <!-- LISTA DE CONVERSACIONES -->
+    <ng-container *ngIf="!activeConversation">
+      <div class="chat-panel-header">
+        <h3>Mensajes</h3>
+        <button class="close-btn" (click)="toggleOpen()">×</button>
+      </div>
+
+      <div class="conversations-list">
+        <div class="empty-conversations" *ngIf="conversations.length === 0">
+          <p>No tienes conversaciones aún</p>
+        </div>
+
+        <div class="conversation-item"
+          *ngFor="let conv of conversations"
+          (click)="openConversation(conv)">
+          <div class="conv-avatar">{{ conv.receiverName?.charAt(0) }}</div>
+          <div class="conv-info">
+            <span class="conv-name">{{ conv.receiverName }}</span>
+            <span class="conv-last">{{ conv.lastMessage }}</span>
+          </div>
+          <span class="conv-badge" *ngIf="conv.unreadCount > 0">{{ conv.unreadCount }}</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- VENTANA DE CHAT -->
+<ng-container *ngIf="activeConversation">
+
+  <!-- El ngIf con el receiverId fuerza recrear el componente al cambiar -->
+<app-chat
+  *ngIf="activeConversation.receiverId"
+  [receiverId]="activeConversation.receiverId"
+  [receiverName]="activeConversation.receiverName"
+  [showBackButton]="true"
+  (backClicked)="backToList()">
+</app-chat>
+</ng-container>
+
+  </div>
+
+</div>

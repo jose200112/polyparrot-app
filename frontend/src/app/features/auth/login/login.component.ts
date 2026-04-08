@@ -44,7 +44,7 @@ login() {
 
   this.authService.login(this.user).subscribe({
     next: (res: any) => {
-      this.authService.saveAuthData(res.token, res.role, res.userId);
+      this.authService.saveAuthData(res.token, res.role, res.userId, res.name);
 
       if (res.role === 'TEACHER') {
         this.http.get(`http://localhost:8081/teachers/${res.userId}`).subscribe({
