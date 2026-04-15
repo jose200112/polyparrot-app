@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -47,7 +48,7 @@ login() {
       this.authService.saveAuthData(res.token, res.role, res.userId, res.name);
 
       if (res.role === 'TEACHER') {
-        this.http.get(`http://localhost:8081/teachers/${res.userId}`).subscribe({
+        this.http.get(`${environment.teacherServiceUrl}/teachers/${res.userId}`).subscribe({
           next: () => this.router.navigate(['/teacher/home']),
           error: () => this.router.navigate(['/teacher/setup'])
         });

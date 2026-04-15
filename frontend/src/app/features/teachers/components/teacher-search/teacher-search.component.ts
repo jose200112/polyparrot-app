@@ -7,6 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { ChatService } from '../../../chat/service/chat.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-teacher-search',
@@ -139,7 +140,7 @@ openBooking(teacher: any) {
 
   loadAvailableSlots(teacherId: number) {
     this.loadingSlots = true;
-    this.http.get<any[]>(`http://localhost:8082/bookings/available/${teacherId}`).subscribe({
+    this.http.get<any[]>(`${environment.bookingServiceUrl}/bookings/available/${teacherId}`).subscribe({
       next: (slots) => {
         this.availableSlots = slots;
         this.buildAvailableDates();
@@ -236,7 +237,7 @@ confirmBooking() {
     `T${String(Number(h) + 1).padStart(2, '0')}`
   );
 
-  this.http.post('http://localhost:8082/bookings', {
+  this.http.post(`${environment.bookingServiceUrl}/bookings`, {
     teacherId: this.selectedTeacher.id,
     startTime,
     endTime
@@ -245,7 +246,7 @@ confirmBooking() {
       this.bookingSuccess = true;
 
       // Inicializar conversación
-      this.http.post('http://localhost:8084/chat/conversation/init', {
+      this.http.post(`${environment.chatServiceUrl}/chat/conversation/init`, {
         userId1: Number(this.authService.getUserId()),
         userId2: this.selectedTeacher.id,
         name1: this.authService.getName(),

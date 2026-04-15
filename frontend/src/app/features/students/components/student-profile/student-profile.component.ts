@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-student-profile',
@@ -54,7 +55,7 @@ export class StudentProfileComponent implements OnInit, OnDestroy {
     if (Object.keys(this.userErrors).length > 0) return;
 
     this.userLoading = true;
-    this.http.patch('http://localhost:8080/users/me', this.userData).subscribe({
+    this.http.patch(`${environment.userServiceUrl}/users/me`, this.userData).subscribe({
       next: () => {
         this.userSuccess = true;
         this.userLoading = false;

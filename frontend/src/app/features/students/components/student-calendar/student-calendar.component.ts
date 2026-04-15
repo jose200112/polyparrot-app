@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-student-calendar',
@@ -91,7 +92,7 @@ export class StudentCalendarComponent implements OnInit, OnDestroy {
   }
 
   loadBookings() {
-    this.http.get<any[]>('http://localhost:8082/bookings/me').subscribe({
+    this.http.get<any[]>(`${environment.bookingServiceUrl}/bookings/me`).subscribe({
       next: (res) => this.bookings = res,
       error: () => this.error = 'Error cargando tus clases'
     });
@@ -159,7 +160,7 @@ getCellClass(dateStr: string, hour: number): string {
   }
 
   cancelBooking() {
-    this.http.patch(`http://localhost:8082/bookings/${this.selectedBooking.id}/cancel`, {}).subscribe({
+    this.http.patch(`${environment.bookingServiceUrl}/bookings/${this.selectedBooking.id}/cancel`, {}).subscribe({
       next: () => {
         this.cancelSuccess = true;
         this.bookings = this.bookings.map(b =>

@@ -6,6 +6,7 @@ import { ChatComponent } from '../chat/chat.component';
 import { ChatService } from '../../service/chat.service';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-chat-float',
@@ -56,7 +57,7 @@ connectGlobalWebSocket() {
   const token = this.authService.getToken();
 
   this.stompClient = new Client({
-    webSocketFactory: () => new SockJS('http://localhost:8084/ws'),
+    webSocketFactory: () => new SockJS(`${environment.chatServiceUrl}/ws`),
 connectHeaders: {
   Authorization: `Bearer ${token}`,
   'X-Session-Type': 'presence'
@@ -105,7 +106,7 @@ updateConversationPreview(msg: any) {
 
 
   loadConversations() {
-    this.http.get<any[]>(`http://localhost:8084/chat/conversations/${this.currentUserId}`)
+    this.http.get<any[]>(`${environment.chatServiceUrl}/chat/conversations/${this.currentUserId}`)
       .subscribe({
         next: (res) => this.conversations = res,
         error: () => {}

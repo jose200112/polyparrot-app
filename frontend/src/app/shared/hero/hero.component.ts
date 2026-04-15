@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-hero',
@@ -23,7 +24,7 @@ export class HeroComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8081/languages').subscribe({
+    this.http.get<any[]>(`${environment.teacherServiceUrl}/languages`).subscribe({
       next: (res) => this.languages = res,
       error: () => {}
     });

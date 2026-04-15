@@ -7,6 +7,7 @@ import SockJS from 'sockjs-client';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ChatService } from '../../service/chat.service'; // ← añadir
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-chat',
@@ -40,7 +41,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   ) {}
 
 
-// añadir campo
 
 ngOnInit() {
   this.currentUserId = Number(this.authService.getUserId());
@@ -50,7 +50,6 @@ ngOnInit() {
   this.connectWebSocket();
   this.checkPresence();
 
-  // ← añadir: escuchar presencia que viene del chat-float
   this.presenceSub = this.chatService.presence$.subscribe(({ userId, online }) => {
     if (userId === this.receiverId) {
       this.isReceiverOnline = online;
@@ -75,7 +74,7 @@ ngOnDestroy() {
 
   loadHistory() {
     this.http.get<any[]>(
-      `http://localhost:8084/chat/conversation/${this.currentUserId}/${this.receiverId}`
+      `${environment.chatServiceUrl}/chat/conversation/${this.currentUserId}/${this.receiverId}`
     ).subscribe({
       next: (res) => {
         this.messages = res;
@@ -87,13 +86,13 @@ ngOnDestroy() {
 
   markAsRead() {
     this.http.patch(
-      `http://localhost:8084/chat/conversation/${this.currentUserId}/${this.receiverId}/read`, {}
+      `${environment.chatServiceUrl}/chat/conversation/${this.currentUserId}/${this.receiverId}/read`, {}
     ).subscribe();
   }
 
   checkPresence() {
     this.http.get<boolean>(
-      `http://localhost:8084/chat/presence/${this.receiverId}`
+      `${environment.chatServiceUrl}/chat/presence/${this.receiverId}`
     ).subscribe({
       next: (online) => this.isReceiverOnline = online,
       error: () => this.isReceiverOnline = false
@@ -104,7 +103,7 @@ ngOnDestroy() {
     const token = this.authService.getToken();
 
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8084/ws'),
+      webSocketFactory: () => new SockJS(`${environment.chatServiceUrl}/ws`),
   connectHeaders: {
   Authorization: `Bearer ${token}`,
   'X-Session-Type': 'chat'

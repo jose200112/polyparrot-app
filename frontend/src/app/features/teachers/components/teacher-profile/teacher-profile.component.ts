@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TeacherService } from '../../services/teacher.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-teacher-profile',
@@ -71,7 +72,7 @@ loadUserData() {
 
   loadTeacherData() {
     const teacherId = this.authService.getUserId();
-    this.http.get<any>(`http://localhost:8081/teachers/${teacherId}`).subscribe({
+    this.http.get<any>(`${environment.teacherServiceUrl}/teachers/${teacherId}`).subscribe({
       next: (res) => {
         this.teacherData.bio = res.bio || '';
         this.teacherData.pricePerHour = res.pricePerHour;
@@ -95,7 +96,7 @@ loadUserData() {
     if (Object.keys(this.userErrors).length > 0) return;
 
     this.userLoading = true;
-    this.http.patch('http://localhost:8080/users/me', this.userData).subscribe({
+    this.http.patch(`${environment.userServiceUrl}/users/me`, this.userData).subscribe({
       next: () => {
         this.userSuccess = true;
         this.userLoading = false;
@@ -130,7 +131,7 @@ loadUserData() {
       spokenLanguageIds: this.teacherData.spokenLanguages.map(l => l.id)
     };
 
-  this.http.patch('http://localhost:8081/teachers/me', payload).subscribe({
+  this.http.patch(`${environment.teacherServiceUrl}/teachers/me`, payload).subscribe({
     next: () => {
       this.teacherSuccess = true;
       this.teacherLoading = false;

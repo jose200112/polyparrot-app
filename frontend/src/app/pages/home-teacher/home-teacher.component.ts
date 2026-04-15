@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home-teacher',
@@ -46,7 +47,7 @@ export class HomeTeacherComponent implements OnInit, OnDestroy {
   }
 
   loadBookings() {
-    this.http.get<any[]>('http://localhost:8081/teachers/me/bookings/upcoming').subscribe({
+    this.http.get<any[]>(`${environment.teacherServiceUrl}/teachers/me/bookings/upcoming`).subscribe({
       next: (res) => {
         const withinWeek = res
           .filter(b => this.isWithinDays(b.startTime, 7))
@@ -65,14 +66,14 @@ export class HomeTeacherComponent implements OnInit, OnDestroy {
 
   loadSlots() {
     const teacherId = this.authService.getUserId();
-    this.http.get<any[]>(`http://localhost:8081/availability/${teacherId}`).subscribe({
+    this.http.get<any[]>(`${environment.teacherServiceUrl}/availability/${teacherId}`).subscribe({
       next: (res) => this.slots = res,
       error: () => {}
     });
   }
 
   confirmBooking(bookingId: number) {
-    this.http.patch(`http://localhost:8082/bookings/${bookingId}/confirm`, {}).subscribe({
+    this.http.patch(`${environment.bookingServiceUrl}/bookings/${bookingId}/confirm`, {}).subscribe({
       next: () => {
         const booking = this.pendingBookings.find(b => b.bookingId === bookingId);
         if (booking) {

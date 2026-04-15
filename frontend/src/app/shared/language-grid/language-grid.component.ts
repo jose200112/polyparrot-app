@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-language-grid',
@@ -32,7 +33,7 @@ export class LanguageGridComponent implements OnInit {
 
   loadCounts() {
     this.languages.forEach(lang => {
-      this.http.get<any[]>(`http://localhost:8081/teachers/search?teachingLanguage=${lang.apiName}`)
+      this.http.get<any[]>(`${environment.teacherServiceUrl}/teachers/search?teachingLanguage=${lang.apiName}`)
         .subscribe({
           next: (res) => lang.count = res.length,
           error: () => {}

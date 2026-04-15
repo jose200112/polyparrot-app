@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../../core/services/notification.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-notifications',
@@ -43,7 +44,7 @@ ngOnDestroy() {
 
 loadNotifications() {
   const userId = this.authService.getUserId();
-  this.http.get<any[]>(`http://localhost:8083/notifications/${userId}`).subscribe({
+  this.http.get<any[]>(`${environment.notificationServiceUrl}/notifications/${userId}`).subscribe({
     next: (res) => {
       this.notifications = res;
       this.loading = false;
@@ -57,7 +58,7 @@ loadNotifications() {
 }
 
 markAllAsRead(userId: string) {
-  this.http.patch(`http://localhost:8083/notifications/${userId}/read-all`, {}).subscribe({
+  this.http.patch(`${environment.notificationServiceUrl}/notifications/${userId}/read-all`, {}).subscribe({
     next: () => this.notificationService.notifyReadAll() 
   });
 }

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeacherService {
 
-  private apiUrl = 'http://localhost:8081/teachers'; 
+  private apiUrl = `${environment.teacherServiceUrl}/teachers`;
 
   constructor(private http: HttpClient) {}
 
@@ -22,6 +23,6 @@ export class TeacherService {
   private cachedLanguages: any[] = [];
 
   getLanguages() { 
-    return this.http.get<any[]>('http://localhost:8081/languages'); 
+    return this.http.get<any[]>(`${environment.teacherServiceUrl}/languages`); 
   }
 }

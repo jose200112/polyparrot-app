@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { NotificationService } from '../../core/services/notification.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -52,7 +53,7 @@ ngOnInit() {
 
   fetchUnreadCount() {
     const userId = this.authService.getUserId();
-    return this.http.get<number>(`http://localhost:8083/notifications/${userId}/unread-count`);
+    return this.http.get<number>(`${environment.notificationServiceUrl}/notifications/${userId}/unread-count`);
   }
 
   loadUnreadCount() {

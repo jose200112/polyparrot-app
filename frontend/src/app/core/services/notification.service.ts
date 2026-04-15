@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -21,7 +22,7 @@ export class NotificationService {
     if (!userId || !token) return;
 
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8083/ws-notifications'),
+      webSocketFactory: () => new SockJS(`${environment.notificationServiceUrl}/ws-notifications`),
       connectHeaders: {
         Authorization: `Bearer ${token}` 
       },

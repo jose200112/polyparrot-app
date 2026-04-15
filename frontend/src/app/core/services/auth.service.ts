@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/auth'; 
+  private apiUrl = `${environment.userServiceUrl}/auth`;
 
   constructor(private http: HttpClient) { }
 
@@ -70,6 +71,6 @@ logout() {
   }
 
   getMe(){
-    return this.http.get<any>('http://localhost:8080/users/me');
+    return this.http.get<any>(`${environment.userServiceUrl}/users/me`);
   }
 }

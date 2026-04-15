@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AvailabilityService } from '../../services/availability.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-availability',
@@ -98,7 +99,7 @@ export class TeacherCalendarComponent implements OnInit, OnDestroy {
   }
 
   loadBookings() {
-    this.http.get<any[]>('http://localhost:8081/teachers/me/bookings/upcoming').subscribe({
+    this.http.get<any[]>(`${environment.teacherServiceUrl}/teachers/me/bookings/upcoming`).subscribe({
       next: (res) => this.bookings = res,
       error: () => {}
     });
@@ -210,7 +211,7 @@ getBooking(dateStr: string, hour: number): any | null {
   }
 
   confirmBooking() {
-    this.http.patch(`http://localhost:8082/bookings/${this.selectedBooking.bookingId}/confirm`, {})
+    this.http.patch(`${environment.bookingServiceUrl}/bookings/${this.selectedBooking.bookingId}/confirm`, {})
       .subscribe({
         next: () => {
           this.bookings = this.bookings.map(b =>
@@ -227,7 +228,7 @@ getBooking(dateStr: string, hour: number): any | null {
   }
 
   cancelBooking() {
-  this.http.patch(`http://localhost:8082/bookings/${this.selectedBooking.bookingId}/cancel-by-teacher`, {})
+  this.http.patch(`${environment.bookingServiceUrl}/bookings/${this.selectedBooking.bookingId}/cancel-by-teacher`, {})
     .subscribe({
       next: () => {
         this.bookings = this.bookings.map(b =>

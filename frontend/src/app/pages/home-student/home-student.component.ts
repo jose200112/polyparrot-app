@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home-student',
@@ -41,7 +42,7 @@ export class HomeStudentComponent implements OnInit, OnDestroy {
   }
 
   loadBookings() {
-    this.http.get<any[]>('http://localhost:8082/bookings/me').subscribe({
+    this.http.get<any[]>(`${environment.bookingServiceUrl}/bookings/me`).subscribe({
       next: (res) => {
         this.bookings = res
           .filter(b => b.status === 'CONFIRMED')

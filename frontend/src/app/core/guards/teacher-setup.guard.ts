@@ -3,6 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { catchError, map, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export const teacherSetupGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -15,11 +16,11 @@ export const teacherSetupGuard: CanActivateFn = () => {
   }
 
   const userId = authService.getUserId();
-  return http.get(`http://localhost:8081/teachers/${userId}`).pipe(
+  return http.get(`${environment.teacherServiceUrl}/teachers/${userId}`).pipe(
     map(() => {
-      router.navigate(['/teacher/home']); // ya tiene perfil → no puede ir a setup
+      router.navigate(['/teacher/home']); 
       return false;
     }),
-    catchError(() => of(true)) // no tiene perfil → puede ir a setup
+    catchError(() => of(true)) 
   );
 };
