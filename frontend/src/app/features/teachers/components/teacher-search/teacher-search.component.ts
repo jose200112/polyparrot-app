@@ -165,7 +165,7 @@ openBooking(teacher: any) {
     const month = this.currentMonth.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const offset = firstDay === 0 ? 6 : firstDay - 1; // lunes primero
+    const offset = firstDay === 0 ? 6 : firstDay - 1; 
 
     this.calendarDays = [];
     for (let i = 0; i < offset; i++) this.calendarDays.push(null);

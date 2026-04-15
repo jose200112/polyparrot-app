@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,26 +18,36 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   menuOpen = false;
   unreadCount = 0;
-  private pollSub?: Subscription;
+  private notifSub?: Subscription;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificationService: NotificationService 
   ) {}
 
-  ngOnInit() {
-    if (this.isLoggedIn()) {
-      this.loadUnreadCount();
-      // Polling cada 30 segundos
-      this.pollSub = interval(30000).pipe(
-        switchMap(() => this.fetchUnreadCount())
-      ).subscribe(count => this.unreadCount = count);
-    }
+ngOnInit() {
+  if (this.isLoggedIn()) {
+    this.loadUnreadCount();
+    this.notificationService.connect();
+
+    this.notifSub = this.notificationService.newNotification$.subscribe(() => {
+      this.unreadCount++;
+    });
+
+    // ← añadir
+    this.notificationService.readAll$.subscribe(() => {
+      this.unreadCount = 0;
+    });
   }
+}
+
+  
 
   ngOnDestroy() {
-    this.pollSub?.unsubscribe();
+    this.notifSub?.unsubscribe();
+    this.notificationService.disconnect(); 
   }
 
   fetchUnreadCount() {
@@ -69,4 +80,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isTeacher(): boolean {
     return this.authService.getRole() === 'TEACHER';
   }
+
 }

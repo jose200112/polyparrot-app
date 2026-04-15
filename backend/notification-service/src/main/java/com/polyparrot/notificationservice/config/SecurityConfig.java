@@ -12,6 +12,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.polyparrot.notificationservice.security.JwtAuthenticationFilter;
 import com.polyparrot.notificationservice.security.JwtService;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -29,6 +30,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/ws-notifications/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(
@@ -41,9 +43,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOriginPatterns(List.of("*")); // ← en producción restringe al dominio real
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

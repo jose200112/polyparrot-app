@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.polyparrot.bookingservice.client.TeacherClient;
@@ -25,6 +28,7 @@ import com.polyparrot.bookingservice.exception.BookingNotPendingException;
 import com.polyparrot.bookingservice.exception.InvalidBookingTimeException;
 import com.polyparrot.bookingservice.exception.SlotAlreadyBookedException;
 import com.polyparrot.bookingservice.exception.SlotNotAvailableException;
+import com.polyparrot.bookingservice.exception.StudentAlreadyBookedException;
 import com.polyparrot.bookingservice.model.BookingStatus;
 import com.polyparrot.bookingservice.repository.BookingRepository;
 import com.polyparrot.bookingservice.security.AuthenticatedUser;
@@ -49,21 +53,29 @@ public class BookingService {
 	@Transactional
 	public BookingResponse createBooking(Long teacherId, LocalDateTime start, LocalDateTime end) {
 		
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime minTime = now.plusHours(24);
+	    LocalDateTime now = LocalDateTime.now();
+	    LocalDateTime minTime = now.plusHours(24);
 
-		if (start.isBefore(minTime)) {
-		    throw new InvalidBookingTimeException();
-		}
+	    if (start.isBefore(minTime)) {
+	        throw new InvalidBookingTimeException();
+	    }
 
 	    AuthenticatedUser user = SecurityUtils.getCurrentUser();
 	    Long studentId = user.getUserId();
 
 	    List<Booking> overlaps = bookingRepository
 	        .findOverlappingBookingsForUpdate(teacherId, start, end);
-
 	    if (!overlaps.isEmpty()) {
 	        throw new SlotAlreadyBookedException();
+	    }
+
+	    boolean studentHasBooking = bookingRepository
+	        .existsByStudentIdAndStartTimeAndStatusIn(
+	            studentId, start,
+	            List.of(BookingStatus.PENDING, BookingStatus.CONFIRMED)
+	        );
+	    if (studentHasBooking) {
+	        throw new StudentAlreadyBookedException();
 	    }
 
 	    List<AvailabilitySlotDto> slots = teacherClient.getAvailability(teacherId);
@@ -113,6 +125,12 @@ public class BookingService {
 	public BookingResponse cancelBooking(Long id) {
 	    Booking booking = bookingRepository.findById(id)
 	        .orElseThrow(BookingNotFoundException::new);
+	    
+	    AuthenticatedUser caller = SecurityUtils.getCurrentUser(); 
+	    
+	    if (!booking.getStudentId().equals(caller.getUserId())) {  
+	        throw new AccessDeniedException("No puedes cancelar una reserva que no es tuya");
+	    }
 
 	    if (booking.getStatus() == BookingStatus.CANCELLED) {
 	        throw new BookingAlreadyCancelledException();
@@ -231,6 +249,11 @@ public class BookingService {
 	public BookingResponse confirmBooking(Long bookingId) {
 	    Booking booking = bookingRepository.findById(bookingId)
 	        .orElseThrow(() -> new RuntimeException("Booking not found"));
+	    
+	    AuthenticatedUser caller = SecurityUtils.getCurrentUser(); 
+	    if (!booking.getTeacherId().equals(caller.getUserId())) {  
+	        throw new AccessDeniedException("No puedes confirmar una reserva que no es tuya");
+	    }
 
 	    if (booking.getStatus() != BookingStatus.PENDING) {
 	        throw new BookingNotPendingException();
@@ -250,6 +273,21 @@ public class BookingService {
 	}
 	
 	public List<BookingDto> getBookingsByTeacherInternal(Long teacherId) {
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    
+	    boolean isInternal = auth.getAuthorities().stream()
+	        .anyMatch(a -> a.getAuthority().equals("ROLE_INTERNAL"));
+
+	    if (!isInternal) {
+	        // Es una llamada del frontend, validar ownership
+	        AuthenticatedUser caller = SecurityUtils.getCurrentUser();
+	        if (!caller.getUserId().equals(teacherId) && 
+	                !"TEACHER".equals(caller.getRole())) {
+	            throw new AccessDeniedException("Acceso no autorizado");
+	        }
+	    }
+	    // Si es INTERNAL, confiar directamente — ya fue validado por el secret
+
 	    return bookingRepository
 	        .findByTeacherIdAndStartTimeAfterAndStatusIn(
 	            teacherId,
@@ -273,6 +311,11 @@ public class BookingService {
 	public BookingResponse cancelByTeacher(Long bookingId) {
 	    Booking booking = bookingRepository.findById(bookingId)
 	        .orElseThrow(BookingNotFoundException::new);
+	    
+	    AuthenticatedUser caller = SecurityUtils.getCurrentUser();
+	    if (!booking.getTeacherId().equals(caller.getUserId())) {  
+	        throw new AccessDeniedException("No puedes cancelar una reserva que no es tuya");
+	    }
 
 	    if (booking.getStatus() == BookingStatus.CANCELLED) {
 	        throw new BookingAlreadyCancelledException();

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { Subscription } from 'rxjs';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-notifications',
@@ -16,40 +18,49 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   notifications: any[] = [];
   loading = true;
   error = '';
+private notifSub?: Subscription;
 
 constructor(
   private http: HttpClient,
   private authService: AuthService,
-  private router: Router
+  private router: Router,
+  private notificationService: NotificationService
 ) {}
 
-  ngOnInit() {
-    document.body.classList.add('student-layout');
-    this.loadNotifications();
-  }
+ngOnInit() {
+  document.body.classList.add('student-layout');
+  this.loadNotifications();
 
-  ngOnDestroy() {
-    document.body.classList.remove('student-layout');
-  }
+  this.notifSub = this.notificationService.newNotification$.subscribe((notif) => {
+    this.notifications.unshift(notif);
+  });
+}
 
-  loadNotifications() {
-    const userId = this.authService.getUserId();
-    this.http.get<any[]>(`http://localhost:8083/notifications/${userId}`).subscribe({
-      next: (res) => {
-        this.notifications = res;
-        this.loading = false;
-        this.markAllAsRead(userId!);
-      },
-      error: () => {
-        this.error = 'Error cargando notificaciones';
-        this.loading = false;
-      }
-    });
-  }
+ngOnDestroy() {
+  document.body.classList.remove('student-layout');
+  this.notifSub?.unsubscribe();
+}
 
-  markAllAsRead(userId: string) {
-    this.http.patch(`http://localhost:8083/notifications/${userId}/read-all`, {}).subscribe();
-  }
+loadNotifications() {
+  const userId = this.authService.getUserId();
+  this.http.get<any[]>(`http://localhost:8083/notifications/${userId}`).subscribe({
+    next: (res) => {
+      this.notifications = res;
+      this.loading = false;
+      this.markAllAsRead(userId!);
+    },
+    error: () => {
+      this.error = 'Error cargando notificaciones';
+      this.loading = false;
+    }
+  });
+}
+
+markAllAsRead(userId: string) {
+  this.http.patch(`http://localhost:8083/notifications/${userId}/read-all`, {}).subscribe({
+    next: () => this.notificationService.notifyReadAll() 
+  });
+}
 
   formatDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('es-ES', {
@@ -67,11 +78,13 @@ constructor(
     }
   }
 
-  navigate(notification: any) {
-  if (notification.type === 'BOOKING_CREATED') {
-    this.router.navigate(['/teacher/home']);
-  } else if (notification.type === 'BOOKING_CONFIRMED') {
-    this.router.navigate(['/student/home']);
+navigate(notification: any) {
+  if (this.authService.getRole() === 'TEACHER') {
+    this.router.navigate(['/teacher/calendar']);
+  } else {
+    this.router.navigate(['/student/calendar']);
   }
 }
+
+
 }

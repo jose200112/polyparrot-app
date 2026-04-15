@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.polyparrot.teacherservice.client.BookingClient;
@@ -21,6 +22,7 @@ import com.polyparrot.teacherservice.entity.Teacher;
 import com.polyparrot.teacherservice.exception.TeacherNotFoundException;
 import com.polyparrot.teacherservice.repository.LanguageRepository;
 import com.polyparrot.teacherservice.repository.TeacherRepository;
+import com.polyparrot.teacherservice.security.AuthenticatedUser;
 import com.polyparrot.teacherservice.security.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -38,11 +40,23 @@ public class TeacherService {
     private final BookingClient bookingClient;
 
     public void createTeacher(CreateTeacherRequest request) {
+    	
+        AuthenticatedUser user = SecurityUtils.getCurrentUser();
 
-        Long userId = SecurityUtils.getCurrentUser().getUserId();
+        if (!"TEACHER".equals(user.getRole())) {
+            throw new AccessDeniedException("Solo los profesores pueden crear un perfil");
+        }
+
+        if (request.getTeachingLanguageIds() != null && request.getSpokenLanguageIds() != null) {
+            boolean overlap = request.getTeachingLanguageIds().stream()
+                .anyMatch(id -> request.getSpokenLanguageIds().contains(id));
+            if (overlap) {
+                throw new IllegalArgumentException("Un idioma no puede estar en ambas listas");
+            }
+        }
 
         Teacher teacher = Teacher.builder()
-            .userId(userId)
+            .userId(user.getUserId())
             .bio(request.getBio())
             .pricePerHour(request.getPricePerHour())
             .rating(null)

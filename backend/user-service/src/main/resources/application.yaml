@@ -18,3 +18,6 @@ server:
 
 jwt:
   secret: polyparrotpolyparrotpolyparrotpolyparrot
+
+internal:
+  secret: ${INTERNAL_SECRET:polyparrot-internal-dev-2026}

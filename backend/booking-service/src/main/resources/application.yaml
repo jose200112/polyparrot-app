@@ -24,3 +24,6 @@ teacher-service:
   url: http://localhost:8081
 user-service:
   url: http://localhost:8080
+
+internal:
+  secret: ${INTERNAL_SECRET:polyparrot-internal-dev-2026}

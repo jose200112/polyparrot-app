@@ -1,20 +1,32 @@
 package com.polyparrot.notificationservice.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 import com.polyparrot.notificationservice.entity.Notification;
 import com.polyparrot.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    
+    private final SimpMessagingTemplate messagingTemplate;
+    
+    private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+
 
     public void createBookingCreatedNotification(Long teacherId, Long bookingId, 
             LocalDateTime startTime, String studentName) {
@@ -29,7 +41,8 @@ public class NotificationService {
             .read(false)
             .createdAt(LocalDateTime.now())
             .build();
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        pushNotification(teacherId, saved);
     }
 
     public void createBookingConfirmedNotification(Long studentId, Long bookingId,
@@ -45,7 +58,8 @@ public class NotificationService {
             .read(false)
             .createdAt(LocalDateTime.now())
             .build();
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        pushNotification(studentId, saved);
     }
 
     public List<Notification> getNotifications(Long userId) {
@@ -75,7 +89,8 @@ public class NotificationService {
             .read(false)
             .createdAt(LocalDateTime.now())
             .build();
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        pushNotification(studentId, saved);
     }
 
     public void createBookingCancelledByStudentNotification(Long teacherId, Long bookingId,
@@ -91,6 +106,25 @@ public class NotificationService {
             .read(false)
             .createdAt(LocalDateTime.now())
             .build();
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+        pushNotification(teacherId, saved); 
+    }
+    
+    public SseEmitter subscribe(Long userId) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        emitters.put(userId, emitter);
+
+        emitter.onCompletion(() -> emitters.remove(userId));
+        emitter.onTimeout(() -> emitters.remove(userId));
+        emitter.onError(e -> emitters.remove(userId));
+
+        return emitter;
+    }
+
+    private void pushNotification(Long userId, Notification notification) {
+        messagingTemplate.convertAndSend(
+            "/topic/notifications/" + userId,
+            notification
+        );
     }
 }

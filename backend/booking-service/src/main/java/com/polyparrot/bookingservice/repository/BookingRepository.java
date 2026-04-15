@@ -48,4 +48,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 		);
 	
 	List<Booking> findByTeacherIdAndStatusIn(Long teacherId, List<BookingStatus> statuses);
+	
+	boolean existsByStudentIdAndStartTimeAndStatusIn(
+	    Long studentId,
+	    LocalDateTime startTime,
+	    List<BookingStatus> statuses
+	);
 }

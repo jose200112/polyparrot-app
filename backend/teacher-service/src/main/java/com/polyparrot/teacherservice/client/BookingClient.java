@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.polyparrot.teacherservice.dto.BookingDto;
 
-@FeignClient(name = "booking-service", url = "${booking-service.url}")
+@FeignClient(name = "booking-service", url = "${booking-service.url}", configuration = FeignConfig.class)
 public interface BookingClient {
 
     @GetMapping("/bookings/check")

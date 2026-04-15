@@ -3,6 +3,7 @@ package com.polyparrot.teacherservice.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.polyparrot.teacherservice.client.BookingClient;
@@ -52,7 +53,12 @@ public class AvailabilityService {
     
     public void deleteSlot(Long slotId) {
         AvailabilitySlot slot = availabilityRepository.findById(slotId)
-            .orElseThrow(SlotNotFoundException::new);
+                .orElseThrow(SlotNotFoundException::new);
+
+        AuthenticatedUser caller = SecurityUtils.getCurrentUser();
+        if (!slot.getTeacherId().equals(caller.getUserId())) {
+        	throw new AccessDeniedException("No puedes eliminar slots de otro profesor");
+        }
 
         LocalDateTime endTime = slot.getStartTime().plusHours(1);
 

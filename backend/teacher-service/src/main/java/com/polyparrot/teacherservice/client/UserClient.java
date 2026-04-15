@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.polyparrot.teacherservice.dto.UserDto;
 
-@FeignClient(name = "user-service", url = "${user-service.url}")
+@FeignClient(name = "user-service", url = "${user-service.url}", configuration = FeignConfig.class)
 public interface UserClient {
 
     @GetMapping("/users/{id}")

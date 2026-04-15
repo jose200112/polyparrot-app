@@ -9,6 +9,8 @@ import com.polyparrot.userservice.dto.UserResponse;
 import com.polyparrot.userservice.entity.User;
 import com.polyparrot.userservice.exception.UserNotFoundException;
 import com.polyparrot.userservice.repository.UserRepository;
+import com.polyparrot.userservice.security.AuthenticatedUser;
+import com.polyparrot.userservice.security.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,20 +21,17 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserResponse getCurrentUser() {
-        String email = SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+        AuthenticatedUser caller = SecurityUtils.getCurrentUser(); // ← consistente
+        User user = userRepository.findById(caller.getUserId())
+            .orElseThrow(UserNotFoundException::new);
         return UserResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .firstSurname(user.getFirstSurname())   
-                .secondSurname(user.getSecondSurname()) 
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .build();
+            .id(user.getId())
+            .name(user.getName())
+            .firstSurname(user.getFirstSurname())
+            .secondSurname(user.getSecondSurname())
+            .email(user.getEmail())
+            .role(user.getRole().name())
+            .build();
     }
     
 	public UserDto getUserById(Long id) {
@@ -46,9 +45,9 @@ public class UserService {
 	
 
 	public UserResponse updateCurrentUser(UpdateUserRequest request) {
-	    String email = SecurityContextHolder.getContext().getAuthentication().getName();
-	    User user = userRepository.findByEmail(email)
-	            .orElseThrow(UserNotFoundException::new);
+	    AuthenticatedUser caller = SecurityUtils.getCurrentUser();
+	    User user = userRepository.findById(caller.getUserId())
+	        .orElseThrow(UserNotFoundException::new);
 
 	    if (request.getName() != null) user.setName(request.getName());
 	    if (request.getFirstSurname() != null) user.setFirstSurname(request.getFirstSurname());

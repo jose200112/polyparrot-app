@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.polyparrot.bookingservice.dto.AvailabilitySlotDto;
 import com.polyparrot.bookingservice.dto.TeacherSummaryDto;
 
-@FeignClient(name = "teacher-service", url = "${teacher-service.url}")
+@FeignClient(name = "teacher-service", url = "${teacher-service.url}", configuration = FeignConfig.class)
 public interface TeacherClient {
 
     @GetMapping("/availability/{teacherId}")
