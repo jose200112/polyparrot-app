@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/teachers_db
-    username: admin
-    password: secret
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/teachers_db
+    username: ${DB_USER:admin}
+    password: ${DB_PASS:secret}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -12,7 +12,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_HOST:localhost}:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -21,13 +21,13 @@ server:
   port: 8081
 
 jwt:
-  secret: polyparrotpolyparrotpolyparrotpolyparrot
+  secret: ${JWT_SECRET:polyparrotpolyparrotpolyparrotpolyparrot}
 
 booking-service:
-  url: http://localhost:8082
+  url: http://${BOOKING_SERVICE_HOST:localhost}:8082
 
 user-service:
-  url: http://localhost:8080
+  url: http://${USER_SERVICE_HOST:localhost}:8080
 
 internal:
   secret: ${INTERNAL_SECRET:polyparrot-internal-dev-2026}

@@ -1,21 +1,18 @@
 <div class="teacher-card">
-  <img
-    class="avatar"
-    src="assets/avatarexample.png"
-    alt="teacher"
-  />
-
-  <h3>{{ teacher.name }} {{ teacher.firstSurname }}</h3>
-
-  <p class="bio">{{ teacher.bio }}</p>
-
-  <div class="rating">
-    ⭐ {{ teacher.rating }}
+  <div class="avatar-wrapper">
+    <img class="avatar" src="assets/avatarexample.png" alt="teacher"/>
   </div>
-
-  <div class="languages">
-    <span *ngFor="let lang of teacher.languages">
-      {{ lang.name }}
-    </span>
+  <div class="card-body">
+    <h3>{{ teacher.name }} {{ teacher.firstSurname }}</h3>
+    <p class="bio">{{ teacher.bio || 'Profesor en PolyParrot' }}</p>
+    <div class="rating">
+      ⭐ {{ teacher.rating }}
+    </div>
+    <div class="languages">
+      <span *ngFor="let lang of teacher.teachingLanguages">{{ lang.name }}</span>
+    </div>
+    <div class="price">
+      {{ teacher.pricePerHour }}€ <span>/hora</span>
+    </div>
   </div>
 </div>

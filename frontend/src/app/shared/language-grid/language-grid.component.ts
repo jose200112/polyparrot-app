@@ -13,14 +13,14 @@ import { environment } from '../../../environments/environment';
 })
 export class LanguageGridComponent implements OnInit {
 
-  languages = [
-    { name: 'inglés', apiName: 'English', icon: 'assets/icons/united-kingdom.png', count: 0 },
-    { name: 'español', apiName: 'Spanish', icon: 'assets/icons/spain.png', count: 0 },
-    { name: 'francés', apiName: 'French', icon: 'assets/icons/france.png', count: 0 },
-    { name: 'alemán', apiName: 'German', icon: 'assets/icons/germany.png', count: 0 },
-    { name: 'italiano', apiName: 'Italian', icon: 'assets/icons/italy.png', count: 0 },
-    { name: 'japonés', apiName: 'Japanese', icon: 'assets/icons/japan.png', count: 0 }
-  ];
+languages = [
+  { name: 'inglés', apiName: 'Inglés', icon: 'assets/icons/united-kingdom.png', count: 0 },
+  { name: 'español', apiName: 'Español', icon: 'assets/icons/spain.png', count: 0 },
+  { name: 'francés', apiName: 'Francés', icon: 'assets/icons/france.png', count: 0 },
+  { name: 'alemán', apiName: 'Alemán', icon: 'assets/icons/germany.png', count: 0 },
+  { name: 'italiano', apiName: 'Italiano', icon: 'assets/icons/italy.png', count: 0 },
+  { name: 'japonés', apiName: 'Japonés', icon: 'assets/icons/japan.png', count: 0 }
+];
 
   constructor(
     private http: HttpClient,

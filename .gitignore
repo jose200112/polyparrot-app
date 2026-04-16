@@ -5,8 +5,10 @@
 frontend/node_modules/
 frontend/dist/
 
-# Backend
+# Backend — compiled artifacts
 **/target/
+
+# Backend — IDE files
 **/.classpath
 **/.project
 **/.settings/

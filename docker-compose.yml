@@ -18,7 +18,7 @@ services:
       - ./docker/postgres/03-seed-teachers.sql:/docker-entrypoint-initdb.d/03-seed-teachers.sql
       - ./docker/postgres/04-seed-bookings.sql:/docker-entrypoint-initdb.d/04-seed-bookings.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d users_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,10 +40,10 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server kafka:9092 --list"]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -59,6 +59,94 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  user-service:
+    build:
+      context: ./backend/user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASS: secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  teacher-service:
+    build:
+      context: ./backend/teacher-service
+      dockerfile: Dockerfile
+    container_name: teacher-service
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASS: secret
+      KAFKA_HOST: kafka
+      BOOKING_SERVICE_HOST: booking-service
+      USER_SERVICE_HOST: user-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  booking-service:
+    build:
+      context: ./backend/booking-service
+      dockerfile: Dockerfile
+    container_name: booking-service
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASS: secret
+      KAFKA_HOST: kafka
+      TEACHER_SERVICE_HOST: teacher-service
+      USER_SERVICE_HOST: user-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: ./backend/notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      MONGO_HOST: mongodb
+      MONGO_USER: admin
+      MONGO_PASS: secret
+      KAFKA_HOST: kafka
+    depends_on:
+      - mongodb
+      - kafka
+
+  chat-service:
+    build:
+      context: ./backend/chat-service
+      dockerfile: Dockerfile
+    container_name: chat-service
+    ports:
+      - "8084:8084"
+    environment:
+      MONGO_HOST: mongodb
+      MONGO_USER: admin
+      MONGO_PASS: secret
+    depends_on:
+      - mongodb
+
   frontend:
     build:
       context: ./frontend
@@ -67,7 +155,11 @@ services:
     ports:
       - "4200:80"
     depends_on:
-      - postgres
+      - user-service
+      - teacher-service
+      - booking-service
+      - notification-service
+      - chat-service
 
 volumes:
   postgres_data:

@@ -13,10 +13,10 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (name, first_surname, second_surname, email, password, role, created_at) VALUES
-('Carlos', 'García', 'López', 'carlos@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'TEACHER', NOW()),
-('María', 'Martínez', 'Sánchez', 'maria@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'TEACHER', NOW()),
-('Pierre', 'Dubois', NULL, 'pierre@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'TEACHER', NOW()),
-('Hans', 'Müller', NULL, 'hans@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'TEACHER', NOW()),
-('Giulia', 'Rossi', NULL, 'giulia@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'TEACHER', NOW()),
-('Yuki', 'Tanaka', NULL, 'yuki@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'TEACHER', NOW()),
-('Ana', 'Student', NULL, 'ana@polyparrot.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LzTf5iEeAbm', 'STUDENT', NOW());
+('Carlos', 'García', 'López', 'carlos@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'TEACHER', NOW()),
+('María', 'Martínez', 'Sánchez', 'maria@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'TEACHER', NOW()),
+('Pierre', 'Dubois', NULL, 'pierre@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'TEACHER', NOW()),
+('Hans', 'Müller', NULL, 'hans@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'TEACHER', NOW()),
+('Giulia', 'Rossi', NULL, 'giulia@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'TEACHER', NOW()),
+('Yuki', 'Tanaka', NULL, 'yuki@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'TEACHER', NOW()),
+('Ana', 'Student', NULL, 'ana@polyparrot.com', '$2a$10$jqjh1PDACbeeTGGd6NJQKOg4HOXw6TodybKqbknevqVeqNAoCWk6a', 'STUDENT', NOW());
