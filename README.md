@@ -4,7 +4,7 @@
 
 ![Home](docs/screenshots/student-home.png)
 ![Dashboard](docs/screenshots/dashboard.png)
-![Calendar] (docs/screenshots/teacher-calendar.png)
+![Calendar](docs/screenshots/teacher-calendar.png)
 
 ---
 
