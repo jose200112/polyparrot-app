@@ -93,10 +93,7 @@ PolyParrot is built as a **microservices system** where each service owns its ow
 ## Getting Started
 
 ### Prerequisites
-
 - Docker and Docker Compose
-- Java 17
-- Maven 3.8+
 
 ### 1. Clone the repository
 
@@ -105,35 +102,15 @@ git clone https://github.com/jose200112/polyparrot-app.git
 cd polyparrot-app
 ```
 
-### 2. Start infrastructure and frontend
+### 2. Start everything
 
 ```bash
 docker-compose up -d
 ```
 
-This starts PostgreSQL (with seed data), MongoDB, Kafka, Zookeeper, and the Angular frontend.
+This builds and starts all microservices, PostgreSQL (with seed data), MongoDB, Kafka, Zookeeper, and the Angular frontend. The first build takes a few minutes while Maven downloads dependencies.
 
-### 3. Build and run the microservices
-
-```bash
-cd backend
-
-for service in user-service teacher-service booking-service notification-service chat-service; do
-  cd $service && mvn clean package -DskipTests && cd ..
-done
-```
-
-Then start each service from your IDE or with:
-
-```bash
-java -jar user-service/target/*.jar &
-java -jar teacher-service/target/*.jar &
-java -jar booking-service/target/*.jar &
-java -jar notification-service/target/*.jar &
-java -jar chat-service/target/*.jar &
-```
-
-### 4. Open the app
+### 3. Open the app
 
 ```
 http://localhost:4200
