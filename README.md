@@ -108,7 +108,7 @@ cd polyparrot-app
 docker-compose up -d
 ```
 
-This builds and starts all microservices, PostgreSQL (with seed data), MongoDB, Kafka, Zookeeper, and the Angular frontend. The first build takes a few minutes while Maven downloads dependencies.
+This pulls the pre-built microservice images from Docker Hub, builds the Angular frontend, and starts PostgreSQL (with seed data), MongoDB, Kafka and Zookeeper. The first run takes a few minutes.
 
 ### 3. Open the app
 
