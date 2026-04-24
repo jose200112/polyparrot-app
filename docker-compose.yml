@@ -138,9 +138,7 @@ services:
       - mongodb
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: jose200112/polyparrot-frontend
     container_name: frontend
     ports:
       - "4200:80"
