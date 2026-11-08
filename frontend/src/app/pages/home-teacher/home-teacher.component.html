@@ -100,9 +100,12 @@
           </div>
         </div>
 
-        <div class="booking-right">
-          <a class="btn-join" href="#">Unirse a la clase →</a>
-        </div>
+<div class="booking-right">
+  <a *ngIf="booking.status === 'CONFIRMED' && booking.meetingUrl" class="btn-join"
+     [href]="booking.meetingUrl" target="_blank" rel="noopener noreferrer">
+    Unirse a la clase →
+  </a>
+</div>
 
       </div>
     </div>

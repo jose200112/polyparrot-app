@@ -14,4 +14,5 @@ public class TeacherBookingResponse {
     private String studentFirstSurname;
     private String studentSecondSurname;
     private String status; 
+    private String meetingUrl;
 }

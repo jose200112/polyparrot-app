@@ -71,19 +71,10 @@ export class HomeTeacherComponent implements OnInit, OnDestroy {
       error: () => {}
     });
   }
-
   confirmBooking(bookingId: number) {
     this.http.patch(`${environment.bookingServiceUrl}/bookings/${bookingId}/confirm`, {}).subscribe({
       next: () => {
-        const booking = this.pendingBookings.find(b => b.bookingId === bookingId);
-        if (booking) {
-          booking.status = 'CONFIRMED';
-          this.pendingBookings = this.pendingBookings.filter(b => b.bookingId !== bookingId);
-          this.confirmedBookings.push(booking);
-          this.confirmedBookings.sort((a, b) =>
-            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-          );
-        }
+        this.loadBookings();
         this.confirmSuccess = '✅ Reserva confirmada';
         setTimeout(() => this.confirmSuccess = '', 3000);
       },

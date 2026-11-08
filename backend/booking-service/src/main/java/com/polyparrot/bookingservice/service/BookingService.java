@@ -2,6 +2,7 @@ package com.polyparrot.bookingservice.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
@@ -223,15 +224,6 @@ public class BookingService {
 	        .toList();
 	}
 	
-	public List<BookingResponse> getBookingsByTeacher(Long teacherId) {
-	    return bookingRepository
-	        .findByTeacherIdAndStatusAndStartTimeAfter(
-	            teacherId, BookingStatus.CONFIRMED, LocalDateTime.now()
-	        )
-	        .stream()
-	        .map(this::mapToResponse)
-	        .toList();
-	}
 	
 	private BookingResponse mapToResponse(Booking booking) {
 	    TeacherSummaryDto teacher = teacherClient.getTeacherSummary(booking.getTeacherId());
@@ -243,6 +235,7 @@ public class BookingService {
 	        .teacherName(teacher.getName())
 	        .teacherFirstSurname(teacher.getFirstSurname())
 	        .teacherSecondSurname(teacher.getSecondSurname())
+	        .meetingUrl(booking.getMeetingUrl())
 	        .build();
 	}
 	
@@ -260,6 +253,7 @@ public class BookingService {
 	    }
 
 	    booking.setStatus(BookingStatus.CONFIRMED);
+	    booking.setMeetingUrl("https://meet.jit.si/polyparrot-" + UUID.randomUUID());
 	    Booking saved = bookingRepository.save(booking);
 
 	    UserDto teacher = userClient.getUserById(booking.getTeacherId());
@@ -281,8 +275,7 @@ public class BookingService {
 	    if (!isInternal) {
 	        // Es una llamada del frontend, validar ownership
 	        AuthenticatedUser caller = SecurityUtils.getCurrentUser();
-	        if (!caller.getUserId().equals(teacherId) && 
-	                !"TEACHER".equals(caller.getRole())) {
+	        if (!caller.getUserId().equals(teacherId)) {
 	            throw new AccessDeniedException("Acceso no autorizado");
 	        }
 	    }
@@ -303,6 +296,7 @@ public class BookingService {
 	            dto.setStartTime(b.getStartTime());
 	            dto.setEndTime(b.getEndTime());
 	            dto.setStatus(b.getStatus().name());
+	            dto.setMeetingUrl(b.getMeetingUrl());
 	            return dto;
 	        })
 	        .toList();

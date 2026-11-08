@@ -6,7 +6,8 @@ CREATE TABLE bookings (
     teacher_id BIGINT NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
-    status VARCHAR(20) NOT NULL
+    status VARCHAR(20) NOT NULL,
+    meeting_url VARCHAR(255)
 );
 CREATE UNIQUE INDEX uq_bookings_teacher_slot
     ON bookings (teacher_id, start_time)

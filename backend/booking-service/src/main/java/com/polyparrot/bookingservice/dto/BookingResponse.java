@@ -15,4 +15,5 @@ public class BookingResponse {
     private String teacherName;
     private String teacherFirstSurname;
     private String teacherSecondSurname;
+    private String meetingUrl;
 }

@@ -163,6 +163,7 @@ public class TeacherService {
                 .studentFirstSurname(student.getFirstSurname())
                 .studentSecondSurname(student.getSecondSurname())
                 .status(booking.getStatus())
+                .meetingUrl(booking.getMeetingUrl())
                 .build();
         }).toList();
     }

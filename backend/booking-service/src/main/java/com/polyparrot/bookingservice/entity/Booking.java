@@ -37,4 +37,7 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status;
+
+    @Column(name = "meeting_url")
+    private String meetingUrl;
 }
