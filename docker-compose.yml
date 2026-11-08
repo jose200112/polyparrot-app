@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   postgres:
@@ -22,6 +20,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -29,6 +28,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    restart: unless-stopped
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -47,6 +47,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+    restart: unless-stopped
 
   mongodb:
     image: mongo:7.0
@@ -58,6 +59,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secret
     volumes:
       - mongo_data:/data/db
+    restart: unless-stopped
 
   user-service:
     image: jose200112/polyparrot-user-service
@@ -72,6 +74,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
 
   teacher-service:
     image: jose200112/polyparrot-teacher-service
@@ -91,6 +94,7 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    restart: unless-stopped
 
   booking-service:
     image: jose200112/polyparrot-booking-service
@@ -110,6 +114,7 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+    restart: unless-stopped
 
   notification-service:
     image: jose200112/polyparrot-notification-service
@@ -124,6 +129,7 @@ services:
     depends_on:
       - mongodb
       - kafka
+    restart: unless-stopped
 
   chat-service:
     image: jose200112/polyparrot-chat-service
@@ -136,6 +142,7 @@ services:
       MONGO_PASS: secret
     depends_on:
       - mongodb
+    restart: unless-stopped
 
   frontend:
     image: jose200112/polyparrot-frontend
@@ -148,6 +155,23 @@ services:
       - booking-service
       - notification-service
       - chat-service
+    restart: unless-stopped
+
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: gateway
+    ports:
+      - "${GATEWAY_PORT:-80}:80"
+    volumes:
+      - ./docker/gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - user-service
+      - teacher-service
+      - booking-service
+      - notification-service
+      - chat-service
+    restart: unless-stopped
 
 volumes:
   postgres_data:
