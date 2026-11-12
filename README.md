@@ -87,6 +87,7 @@ PolyParrot is built as a **microservices system** where each service owns its ow
 - 💬 **Real-time chat** — WebSocket messaging with read receipts and online presence
 - 🔔 **Real-time notifications** — Kafka events pushed to the browser via WebSocket
 - 📆 **Weekly calendar** — visual class schedule for both students and teachers
+- 🎥 **Video classes** — live lessons powered by Jitsi Meet
 
 ---
 
@@ -239,6 +240,8 @@ The only things that bill while it is up are the EC2 instance, the Application L
 - Single instance, so there is **no high availability**. The ALB spans two subnets, but only one target is behind it.
 - Databases run in containers on the same instance and the root volume is deleted on termination, so **data is not persistent**. This is fine for a demo.
 - Terraform state is **local**. A natural next step is an S3 backend with locking.
+- DNS is managed in Cloudflare. Route 53 would be the natural choice for health checks, failover routing and alias records at the apex domain.
+- Every service publishes its port in `docker-compose.yml` (inherited from local development). On AWS only the ALB can reach the instance, so they are not exposed, but a next step is to bind databases and Kafka to `127.0.0.1` and drop the `ports:` that are not needed.
 - Possible next steps: ECS/Fargate or EKS, RDS for PostgreSQL, private subnets with VPC endpoints, and a CI pipeline that runs `terraform validate` and `plan`.
 
 ---
@@ -274,7 +277,6 @@ polyparrot-app/
 ## Future improvements
 
 - API Gateway (Spring Cloud Gateway) as a single entry point
-- Video call integration for live classes
 - Rating and review system
 
 ---
