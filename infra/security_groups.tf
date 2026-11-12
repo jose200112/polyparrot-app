@@ -1,12 +1,20 @@
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
-  description = "ALB - HTTP desde Internet"
+  description = "ALB - HTTP/HTTPS desde Internet"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "HTTP desde Internet"
+    description = "HTTP desde Internet (solo para redirigir a HTTPS)"
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS desde Internet"
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

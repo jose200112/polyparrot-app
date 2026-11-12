@@ -21,3 +21,21 @@ variable "repo_url" {
   type        = string
   default     = "https://github.com/jose200112/polyparrot-app.git"
 }
+
+variable "domain_name" {
+  description = "Dominio registrado en Cloudflare (cambiarlo aquí si algún día cambia el dominio)"
+  type        = string
+  default     = "josemunozmunoz.dev"
+}
+
+variable "subdomain" {
+  description = "Subdominio donde se publica la app (queda subdomain.domain_name)"
+  type        = string
+  default     = "polyparrot"
+}
+
+variable "cloudflare_zone_id" {
+  description = "Zone ID del dominio en Cloudflare (no es secreto; el token va por variable de entorno)"
+  type        = string
+  default     = "8163ce5e19f2cee952184fa10af6e2ed"
+}
