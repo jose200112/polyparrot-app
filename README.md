@@ -231,9 +231,9 @@ terraform destroy
 
 ### Cost
 
-The only things that bill while it is up are the EC2 instance, the Application Load Balancer and the public IPv4 addresses. The ACM certificate is free. Each test runs for well under an hour, and the account has budget alerts set up as a safety net.
+The only things that bill while it is up are the EC2 instance, the Application Load Balancer and the public IPv4 addresses. The ACM certificate is free.
 
-<!-- TODO: add the real cost of one test run after checking Cost Explorer -->
+Left running 24/7 it would cost roughly **$0.12-0.15 per hour** (about **$3 per day, or $90-100 per month**, approximate on-demand prices in `eu-north-1`). That is why it is a launch-test-destroy setup: each test runs for well under an hour, and the whole test session (both the HTTP and the HTTPS deployments) cost less than **$1** in total, covered by AWS credits. The account also has budget alerts set up as a safety net.
 
 ### Limitations and next steps
 
