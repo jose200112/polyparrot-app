@@ -116,8 +116,10 @@ This pulls the pre-built microservice images from Docker Hub, starts PostgreSQL 
 ### 3. Open the app
 
 ```
-http://localhost:4200
+http://localhost
 ```
+
+> The nginx **gateway** (port 80) is the single entry point: it serves the frontend and routes `/api/...` to the microservices. If port 80 is busy on your machine, pick another one with `GATEWAY_PORT=8000 docker-compose up -d` and open `http://localhost:8000`. Databases, Kafka and the services are only reachable from your own machine (their ports are bound to `127.0.0.1`).
 
 ### Demo credentials
 
@@ -241,7 +243,7 @@ Left running 24/7 it would cost roughly **$0.12-0.15 per hour** (about **$3 per 
 - Databases run in containers on the same instance and the root volume is deleted on termination, so **data is not persistent**. This is fine for a demo.
 - Terraform state is **local**. A natural next step is an S3 backend with locking.
 - DNS is managed in Cloudflare. Route 53 would be the natural choice for health checks, failover routing and alias records at the apex domain.
-- Every service publishes its port in `docker-compose.yml` (inherited from local development). On AWS only the ALB can reach the instance, so they are not exposed, but a next step is to bind databases and Kafka to `127.0.0.1` and drop the `ports:` that are not needed.
+- Demo credentials and default secrets (database passwords, `JWT_SECRET`, `INTERNAL_SECRET`) are meant for local use. They can be overridden with environment variables for anything beyond a demo, ideally from AWS Systems Manager Parameter Store or Secrets Manager.
 - Possible next steps: ECS/Fargate or EKS, RDS for PostgreSQL, private subnets with VPC endpoints, and a CI pipeline that runs `terraform validate` and `plan`.
 
 ---
