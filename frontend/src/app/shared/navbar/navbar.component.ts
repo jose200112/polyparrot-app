@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { interval, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, filter } from 'rxjs/operators';
 import { NotificationService } from '../../core/services/notification.service';
 import { environment } from '../../../environments/environment';
 
@@ -19,7 +19,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   menuOpen = false;
   unreadCount = 0;
-  private notifSub?: Subscription;
+  private subs = new Subscription();
+  private connected = false;
 
   constructor(
     private authService: AuthService,
@@ -29,26 +30,44 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
 ngOnInit() {
-  if (this.isLoggedIn()) {
-    this.loadUnreadCount();
-    this.notificationService.connect();
-
-    this.notifSub = this.notificationService.newNotification$.subscribe(() => {
+  this.subs.add(
+    this.notificationService.newNotification$.subscribe(() => {
       this.unreadCount++;
-    });
+    })
+  );
 
-    // ← añadir
+  this.subs.add(
     this.notificationService.readAll$.subscribe(() => {
       this.unreadCount = 0;
-    });
-  }
+    })
+  );
+
+  // The navbar lives outside <router-outlet>, so it is created only once.
+  // Re-check the session after every navigation (e.g. right after login).
+  this.subs.add(
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => this.syncSession())
+  );
+
+  this.syncSession();
 }
 
-  
+  private syncSession() {
+    if (this.isLoggedIn() && !this.connected) {
+      this.connected = true;
+      this.loadUnreadCount();
+      this.notificationService.connect();
+    } else if (!this.isLoggedIn() && this.connected) {
+      this.connected = false;
+      this.notificationService.disconnect();
+      this.unreadCount = 0;
+    }
+  }
 
   ngOnDestroy() {
-    this.notifSub?.unsubscribe();
-    this.notificationService.disconnect(); 
+    this.subs.unsubscribe();
+    this.notificationService.disconnect();
   }
 
   fetchUnreadCount() {
@@ -75,6 +94,7 @@ ngOnInit() {
     this.authService.logout();
     this.menuOpen = false;
     this.unreadCount = 0;
+    this.syncSession();
     this.router.navigateByUrl('/');
   }
 
